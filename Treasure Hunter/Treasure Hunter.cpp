@@ -231,13 +231,11 @@ class Collision
 
             if (!IsWithinMapBounds(assesNextYMove, assesNextXMove, map))
             {
-                std::cout << "Out of bounds!\n";
                 return false;
             }
 
             if (IsCollidableObject(assesNextYMove, assesNextXMove, map))
             {
-                std::cout << "Collision detected! Cannot move there.\n";
                 return false;
             }
 
@@ -280,6 +278,7 @@ int main()
         std::cout << "D). Right\n\n";
 
         std::cout << "I). View Treasure\n";
+        std::cout << "X). Dig\n";
         std::cout << ">";
 
         char selection{ ' ' };
