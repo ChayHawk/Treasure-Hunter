@@ -34,11 +34,11 @@ class Map
 
         void DrawMap()
         {
-            for (size_t y = 0; y < mHeight; ++y)
+            for (size_t column = 0; column < mHeight; ++column)
             {
-                for (size_t x = 0; x < mWidth; ++x)
+                for (size_t row = 0; row < mWidth; ++row)
                 {
-                    if (mDugSpots[y][x] == true)
+                    if (mDugSpots[column][row] == true)
                     {
                         // Display 'X' if the spot is dug
                         std::cout << 'x' << ' ';
@@ -46,30 +46,30 @@ class Map
                     else
                     {
                         // Otherwise, display the regular map tile
-                        std::cout << mMap[y][x] << ' ';
+                        std::cout << mMap[column][row] << ' ';
                     }
                 }
                 std::cout << '\n';
             }
         }
 
-        void PlaceOnMap(int y, int x, char object, bool collidable = false)
+        void PlaceOnMap(int posY, int posX, char object, bool collidable = false)
         {
-            mMap[y][x] = object;
+            mMap[posY][posX] = object;
             if (collidable == false)
             {
-                mCollidable[y][x] = true;
+                mCollidable[posY][posX] = true;
             }
         }
 
-        void MarkAsDug(int y, int x)
+        void MarkAsDug(int posY, int posX)
         {
-            mDugSpots[y][x] = true;
+            mDugSpots[posY][posX] = true;
         }
 
-        bool IsDug(int y, int x) const
+        bool IsDug(int posY, int posX) const
         {
-            return mDugSpots[y][x];
+            return mDugSpots[posY][posX];
         }
 
         int GetHeight() const
@@ -82,9 +82,9 @@ class Map
             return mWidth;
         }
 
-        bool IsCollidable(int y, int x) const
+        bool IsCollidable(int posY, int posX) const
         {
-            return mCollidable[y][x];
+            return mCollidable[posY][posX];
         }
 
         char GetTile() const
@@ -130,8 +130,7 @@ class Character
 {
     public:
         Character(const std::string& name, char sprite) : mName(name), mSprite(sprite)
-        {
-        }
+        {}
 
         std::string GetName() const
         {
@@ -153,23 +152,10 @@ class Character
             return mXPos;
         }
 
-        void SetCoordinates(int y, int x)
+        void SetCoordinates(int posY, int posX)
         {
-            mYPos = y;
-            mXPos = x;
-        }
-
-        int GetScore() const
-        {
-            return mScore;
-        }
-
-        void GiveScore(int amount)
-        {
-            if (amount > 0)
-            {
-                mScore += amount;
-            }
+            mYPos = posY;
+            mXPos = posX;
         }
 
         void TakeTreasure(const Treasure& treasure, int amount)
@@ -214,6 +200,7 @@ class Character
             {
                 map.MarkAsDug(y, x);
                 std::cout << "You dug a hole at (" << y << ", " << x << ").\n";
+                --mDigsLeft;
             }
             else
             {
@@ -221,11 +208,23 @@ class Character
             }
         }
 
+        int GetScore() const
+        {
+            return mScore;
+        }
+
+        int GetDigsLeft() const
+        {
+            return mDigsLeft;
+        }
+
     private:
         std::string mName{ "Character Name" };
         char mSprite{};
         int mYPos{ 0 };
         int mXPos{ 0 };
+        int mScore{ 0 };
+        int mDigsLeft{ 10 };
 
         std::vector<std::pair<Treasure, int>> mTreasureList{};
 };
@@ -288,12 +287,6 @@ class Collision
         }
 };
 
-struct Game
-{
-    int score{ 0 };
-    int digAttemptsLeft{ 10 };
-};
-
 
 int main()
 {
@@ -312,7 +305,8 @@ int main()
 
     while (!isGameOver)
     {
-        std::cout << "Score: " << hero.GetScore() << "\n\n";
+        std::cout << "Score: " << hero.GetScore() << '\n';
+        std::cout << "Digs Left: " << hero.GetDigsLeft() << "\n\n";
 
         int lastY{ hero.GetYCoordinates() };
         int lastX{ hero.GetXCoordinates() };
@@ -340,7 +334,15 @@ int main()
         }
         else if (selection == 'X' || selection == 'x')
         {
-            hero.Dig(start);
+            if (hero.GetDigsLeft() > 0)
+            {
+                hero.Dig(start);
+            }
+            else
+            {
+                //Not implemented this part of the game, but this dialogue will appear for now anyways.
+                std::cout << "You are out of digs! Return to the prospector for another chance.\n";
+            }
         }
         else if(collision.IsMoveValid(hero, start, selection))
         {
