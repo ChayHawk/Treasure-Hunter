@@ -202,26 +202,26 @@ class Collision
 
         bool IsMoveValid(Character& character, const Map& map, char direction)
         {
-            int assesNextYMove = character.GetYCoordinates();
-            int assesNextXMove = character.GetXCoordinates();
+            int assesNextMoveY = character.GetYCoordinates();
+            int assesNextMoveX = character.GetXCoordinates();
 
             // Predict the new coordinates
             switch (direction)
             {
                 case 'W': case 'w': 
-                    assesNextYMove--; 
+                    assesNextMoveY--;
                     break;
 
                 case 'S': case 's': 
-                    assesNextYMove++;
+                    assesNextMoveY++;
                     break;
 
                 case 'A': case 'a': 
-                    assesNextXMove--;
+                    assesNextMoveX--;
                     break;
 
                 case 'D': case 'd': 
-                    assesNextXMove++;
+                    assesNextMoveX++;
                     break;
 
                 default:
@@ -229,12 +229,12 @@ class Collision
                     return false;
             }
 
-            if (!IsWithinMapBounds(assesNextYMove, assesNextXMove, map))
+            if (!IsWithinMapBounds(assesNextMoveY, assesNextMoveX, map))
             {
                 return false;
             }
 
-            if (IsCollidableObject(assesNextYMove, assesNextXMove, map))
+            if (IsCollidableObject(assesNextMoveY, assesNextMoveX, map))
             {
                 return false;
             }
