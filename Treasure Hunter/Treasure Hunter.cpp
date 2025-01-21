@@ -4,6 +4,19 @@
 #include <algorithm>
 #include <utility>
 
+//TODO
+
+//ONE
+//Need to implement dig system. I was thinking to add a check to see if the space has been dug
+//Then create a new map to store dig locations, then replace the current map tiles with the dug 
+//ones. I can make a new map of all the X spots then replace current map tiles with them.
+//I might need to find a way to stop the map from drawing over the x's without leaving a
+//player trail.
+
+//TWO
+//Implement a system where the player has to follow clues to find treasure, and they have only
+//a certain amoiunt of digs they can use before the game is over.
+
 class Map
 {
     public:
@@ -16,15 +29,25 @@ class Map
         {
             mMap.assign(mHeight, std::vector<char>(mWidth, mTile));
             mCollidable.assign(mHeight, std::vector<bool>(mWidth, false)); // Initialize collidable map
+            mDugSpots.assign(mHeight, std::vector<bool>(mWidth, false));
         }
 
         void DrawMap()
         {
-            for (const auto& column : mMap)
+            for (size_t y = 0; y < mHeight; ++y)
             {
-                for (char row : column)
+                for (size_t x = 0; x < mWidth; ++x)
                 {
-                    std::cout << row << ' ';
+                    if (mDugSpots[y][x] == true)
+                    {
+                        // Display 'X' if the spot is dug
+                        std::cout << 'X' << ' ';
+                    }
+                    else
+                    {
+                        // Otherwise, display the regular map tile
+                        std::cout << mMap[y][x] << ' ';
+                    }
                 }
                 std::cout << '\n';
             }
@@ -33,10 +56,20 @@ class Map
         void PlaceOnMap(int y, int x, char object, bool collidable = false)
         {
             mMap[y][x] = object;
-            if (collidable)
+            if (collidable == false)
             {
                 mCollidable[y][x] = true;
             }
+        }
+
+        void MarkAsDug(int y, int x)
+        {
+            mDugSpots[y][x] = true;
+        }
+
+        bool IsDug(int y, int x) const
+        {
+            return mDugSpots[y][x];
         }
 
         int GetHeight() const
@@ -67,6 +100,7 @@ class Map
 
         std::vector<std::vector<char>> mMap;
         std::vector<std::vector<bool>> mCollidable;
+        std::vector<std::vector<bool>> mDugSpots;
 };
 
 
@@ -171,9 +205,20 @@ class Character
             }
         }
 
-        void Dig()
+        void Dig(Map& map)
         {
+            int y = GetYCoordinates();
+            int x = GetXCoordinates();
 
+            if (!map.IsDug(y, x))
+            {
+                map.MarkAsDug(y, x);
+                std::cout << "You dug a hole at (" << y << ", " << x << ").\n";
+            }
+            else
+            {
+                std::cout << "This spot has already been dug.\n";
+            }
         }
 
     private:
@@ -291,7 +336,7 @@ int main()
         }
         else if (selection == 'X' || selection == 'x')
         {
-            hero.Dig();
+            hero.Dig(start);
         }
         else if(collision.IsMoveValid(hero, start, selection))
         {
