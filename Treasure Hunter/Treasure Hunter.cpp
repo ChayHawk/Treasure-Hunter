@@ -41,7 +41,7 @@ class Map
                     if (mDugSpots[y][x] == true)
                     {
                         // Display 'X' if the spot is dug
-                        std::cout << 'X' << ' ';
+                        std::cout << 'x' << ' ';
                     }
                     else
                     {
@@ -226,7 +226,6 @@ class Character
         char mSprite{};
         int mYPos{ 0 };
         int mXPos{ 0 };
-        int mScore{ 0 };
 
         std::vector<std::pair<Treasure, int>> mTreasureList{};
 };
@@ -289,6 +288,11 @@ class Collision
         }
 };
 
+struct Game
+{
+    int score{ 0 };
+    int digAttemptsLeft{ 10 };
+};
 
 
 int main()
