@@ -2,158 +2,250 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <utility>
 
 class Map
 {
-public:
-    Map(const std::string& name, int height, int width, char tile)
-        : mName(name), mHeight(height), mWidth(width), mTile(tile)
-    {
-    }
-
-    void Initialize()
-    {
-        mMap.assign(mHeight, std::vector<char>(mWidth, mTile));
-        mCollidable.assign(mHeight, std::vector<bool>(mWidth, false)); // Initialize collidable map
-    }
-
-    void DrawMap()
-    {
-        for (const auto& column : mMap)
+    public:
+        Map(const std::string& name, int height, int width, char tile)
+            : mName(name), mHeight(height), mWidth(width), mTile(tile)
         {
-            for (char row : column)
+        }
+
+        void Initialize()
+        {
+            mMap.assign(mHeight, std::vector<char>(mWidth, mTile));
+            mCollidable.assign(mHeight, std::vector<bool>(mWidth, false)); // Initialize collidable map
+        }
+
+        void DrawMap()
+        {
+            for (const auto& column : mMap)
             {
-                std::cout << row << ' ';
+                for (char row : column)
+                {
+                    std::cout << row << ' ';
+                }
+                std::cout << '\n';
             }
-            std::cout << '\n';
         }
-    }
 
-    void PlaceOnMap(int y, int x, char object, bool collidable = false)
-    {
-        mMap[y][x] = object;
-        if (collidable)
+        void PlaceOnMap(int y, int x, char object, bool collidable = false)
         {
-            mCollidable[y][x] = true;
+            mMap[y][x] = object;
+            if (collidable)
+            {
+                mCollidable[y][x] = true;
+            }
         }
-    }
 
-    int GetHeight() const
-    {
-        return mHeight;
-    }
+        int GetHeight() const
+        {
+            return mHeight;
+        }
 
-    int GetWidth() const
-    {
-        return mWidth;
-    }
+        int GetWidth() const
+        {
+            return mWidth;
+        }
 
-    bool IsCollidable(int y, int x) const
-    {
-        return mCollidable[y][x];
-    }
+        bool IsCollidable(int y, int x) const
+        {
+            return mCollidable[y][x];
+        }
 
-    char GetTile() const
-    {
-        return mTile;
-    }
+        char GetTile() const
+        {
+            return mTile;
+        }
 
-private:
-    std::string mName{ "Map Name" };
-    int mHeight{ 10 };
-    int mWidth{ 10 };
-    char mTile{ '.' };
+    private:
+        std::string mName{ "Map Name" };
+        int mHeight{ 10 };
+        int mWidth{ 10 };
+        char mTile{ '.' };
 
-    std::vector<std::vector<char>> mMap;
-    std::vector<std::vector<bool>> mCollidable; // Tracks collidable tiles
+        std::vector<std::vector<char>> mMap;
+        std::vector<std::vector<bool>> mCollidable;
 };
+
+
+class Treasure
+{
+    public:
+        Treasure(const std::string name, int value) : mName(name), mValue(value)
+        { }
+
+        std::string GetName() const
+        {
+            return mName;
+        }
+
+        int GetValue() const
+        {
+            return mValue;
+        }
+
+    private:
+        std::string mName{};
+        int mValue{};
+};
+
 
 class Character
 {
-public:
-    Character(const std::string& name, char sprite) : mName(name), mSprite(sprite)
-    {
-    }
+    public:
+        Character(const std::string& name, char sprite) : mName(name), mSprite(sprite)
+        {
+        }
 
-    std::string GetName() const
-    {
-        return mName;
-    }
+        std::string GetName() const
+        {
+            return mName;
+        }
 
-    char GetSprite() const
-    {
-        return mSprite;
-    }
+        char GetSprite() const
+        {
+            return mSprite;
+        }
 
-    int GetYCoordinates() const
-    {
-        return mYPos;
-    }
+        int GetYCoordinates() const
+        {
+            return mYPos;
+        }
 
-    int GetXCoordinates() const
-    {
-        return mXPos;
-    }
+        int GetXCoordinates() const
+        {
+            return mXPos;
+        }
 
-    void SetCoordinates(int y, int x)
-    {
-        mYPos = y;
-        mXPos = x;
-    }
+        void SetCoordinates(int y, int x)
+        {
+            mYPos = y;
+            mXPos = x;
+        }
 
-private:
-    std::string mName{ "Character Name" };
-    char mSprite{};
-    int mYPos{ 0 };
-    int mXPos{ 0 };
+        int GetScore() const
+        {
+            return mScore;
+        }
+
+        void GiveScore(int amount)
+        {
+            if (amount > 0)
+            {
+                mScore += amount;
+            }
+        }
+
+        void TakeTreasure(const Treasure& treasure, int amount)
+        {
+            auto findDuplicate = [&treasure](const std::pair<Treasure, int>& a)
+                {
+                    return treasure.GetName() == a.first.GetName();
+                };
+
+            auto itr = std::find_if(mTreasureList.begin(), mTreasureList.end(), findDuplicate);
+
+            if (itr != mTreasureList.end())
+            {
+                itr->second += amount;
+            }
+            else
+            {
+                mTreasureList.push_back(std::make_pair(treasure, amount));
+            }
+        }
+
+        void ViewTreasure() const
+        {
+            if (mTreasureList.empty())
+            {
+                std::cout << "I don't have any treasure yet.\n";
+                return;
+            }
+
+            for (auto& i : mTreasureList)
+            {
+                std::cout << i.first.GetName() << "x(" << i.second << ")\n";
+            }
+        }
+
+        void Dig()
+        {
+
+        }
+
+    private:
+        std::string mName{ "Character Name" };
+        char mSprite{};
+        int mYPos{ 0 };
+        int mXPos{ 0 };
+        int mScore{ 0 };
+
+        std::vector<std::pair<Treasure, int>> mTreasureList{};
 };
 
 class Collision
 {
-public:
-    bool IsWithinMapBounds(int proposedY, int proposedX, const Map& map)
-    {
-        return proposedY >= 0 && proposedY < map.GetHeight() &&
-            proposedX >= 0 && proposedX < map.GetWidth();
-    }
-
-    bool IsCollidableObject(int proposedY, int proposedX, const Map& map)
-    {
-        return map.IsCollidable(proposedY, proposedX);
-    }
-
-    bool IsMoveValid(Character& character, const Map& map, char direction)
-    {
-        int proposedY = character.GetYCoordinates();
-        int proposedX = character.GetXCoordinates();
-
-        // Predict the new coordinates
-        switch (direction)
+    public:
+        bool IsWithinMapBounds(int proposedY, int proposedX, const Map& map)
         {
-        case 'W': case 'w': proposedY--; break;
-        case 'S': case 's': proposedY++; break;
-        case 'A': case 'a': proposedX--; break;
-        case 'D': case 'd': proposedX++; break;
-        default:
-            std::cout << "Invalid direction.\n";
-            return false;
+            return proposedY >= 0 && proposedY < map.GetHeight() &&
+                proposedX >= 0 && proposedX < map.GetWidth();
         }
 
-        if (!IsWithinMapBounds(proposedY, proposedX, map))
+        bool IsCollidableObject(int proposedY, int proposedX, const Map& map)
         {
-            std::cout << "Out of bounds!\n";
-            return false;
+            return map.IsCollidable(proposedY, proposedX);
         }
 
-        if (IsCollidableObject(proposedY, proposedX, map))
+        bool IsMoveValid(Character& character, const Map& map, char direction)
         {
-            std::cout << "Collision detected! Cannot move there.\n";
-            return false;
-        }
+            int assesNextYMove = character.GetYCoordinates();
+            int assesNextXMove = character.GetXCoordinates();
 
-        return true;
-    }
+            // Predict the new coordinates
+            switch (direction)
+            {
+                case 'W': case 'w': 
+                    assesNextYMove--; 
+                    break;
+
+                case 'S': case 's': 
+                    assesNextYMove++;
+                    break;
+
+                case 'A': case 'a': 
+                    assesNextXMove--;
+                    break;
+
+                case 'D': case 'd': 
+                    assesNextXMove++;
+                    break;
+
+                default:
+                    std::cout << "Invalid direction.\n";
+                    return false;
+            }
+
+            if (!IsWithinMapBounds(assesNextYMove, assesNextXMove, map))
+            {
+                std::cout << "Out of bounds!\n";
+                return false;
+            }
+
+            if (IsCollidableObject(assesNextYMove, assesNextXMove, map))
+            {
+                std::cout << "Collision detected! Cannot move there.\n";
+                return false;
+            }
+
+            return true;
+        }
 };
+
+
 
 int main()
 {
@@ -172,6 +264,8 @@ int main()
 
     while (!isGameOver)
     {
+        std::cout << "Score: " << hero.GetScore() << "\n\n";
+
         int lastY{ hero.GetYCoordinates() };
         int lastX{ hero.GetXCoordinates() };
 
@@ -183,34 +277,50 @@ int main()
         std::cout << "W). Up\n";
         std::cout << "S). Down\n";
         std::cout << "A). Left\n";
-        std::cout << "D). Right\n";
+        std::cout << "D). Right\n\n";
+
+        std::cout << "I). View Treasure\n";
         std::cout << ">";
 
-        char direction{ ' ' };
-        std::cin >> direction;
+        char selection{ ' ' };
+        std::cin >> selection;
 
-        if (collision.IsMoveValid(hero, start, direction))
+        if (selection == 'I' || selection == 'i')
+        {
+            hero.ViewTreasure();
+        }
+        else if (selection == 'X' || selection == 'x')
+        {
+            hero.Dig();
+        }
+        else if(collision.IsMoveValid(hero, start, selection))
         {
             // Update position if the move is valid
-            switch (direction)
+            switch (selection)
             {
-            case 'W': case 'w': hero.SetCoordinates(hero.GetYCoordinates() - 1, hero.GetXCoordinates()); break;
-            case 'S': case 's': hero.SetCoordinates(hero.GetYCoordinates() + 1, hero.GetXCoordinates()); break;
-            case 'A': case 'a': hero.SetCoordinates(hero.GetYCoordinates(), hero.GetXCoordinates() - 1); break;
-            case 'D': case 'd': hero.SetCoordinates(hero.GetYCoordinates(), hero.GetXCoordinates() + 1); break;
+                case 'W': case 'w': 
+                    hero.SetCoordinates(hero.GetYCoordinates() - 1, hero.GetXCoordinates()); 
+                    break;
+
+                case 'S': case 's': 
+                    hero.SetCoordinates(hero.GetYCoordinates() + 1, hero.GetXCoordinates()); 
+                    break;
+
+                case 'A': case 'a': 
+                    hero.SetCoordinates(hero.GetYCoordinates(), hero.GetXCoordinates() - 1); 
+                    break;
+
+                case 'D': case 'd': 
+                    hero.SetCoordinates(hero.GetYCoordinates(), hero.GetXCoordinates() + 1); 
+                    break;
             }
 
+            //Reset map tile back to default after player walks over it.
             start.PlaceOnMap(lastY, lastX, start.GetTile());
-
-            std::cout << "Current Y: " << hero.GetYCoordinates() << '\n';
-            std::cout << "Current X: " << hero.GetXCoordinates() << "\n\n";
-
-            std::cout << "Last Y: " << lastY << '\n';
-            std::cout << "Last X: " << lastX << '\n';
         }
         else
         {
-            std::cout << "Move invalid! Try again.\n";
+            std::cout << "Cannot go any further in that direction.\n";
         }
     }
 }
