@@ -56,11 +56,9 @@ class Map
         void PlaceOnMap(int posY, int posX, char object, bool collidable = false)
         {
             mMap[posY][posX] = object;
-            if (collidable == false)
-            {
-                mCollidable[posY][posX] = true;
-            }
+            mCollidable[posY][posX] = collidable;
         }
+
 
         void MarkAsDug(int posY, int posX)
         {
