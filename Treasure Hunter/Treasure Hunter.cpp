@@ -189,17 +189,6 @@ class Character
 class Collision
 {
     public:
-        bool IsWithinMapBounds(int proposedY, int proposedX, const Map& map)
-        {
-            return proposedY >= 0 && proposedY < map.GetHeight() &&
-                proposedX >= 0 && proposedX < map.GetWidth();
-        }
-
-        bool IsCollidableObject(int proposedY, int proposedX, const Map& map)
-        {
-            return map.IsCollidable(proposedY, proposedX);
-        }
-
         bool IsMoveValid(Character& character, const Map& map, char direction)
         {
             int assesNextMoveY = character.GetYCoordinates();
@@ -240,6 +229,18 @@ class Collision
             }
 
             return true;
+        }
+
+    private:
+        bool IsWithinMapBounds(int proposedY, int proposedX, const Map& map)
+        {
+            return proposedY >= 0 && proposedY < map.GetHeight() &&
+                proposedX >= 0 && proposedX < map.GetWidth();
+        }
+
+        bool IsCollidableObject(int proposedY, int proposedX, const Map& map)
+        {
+            return map.IsCollidable(proposedY, proposedX);
         }
 };
 
