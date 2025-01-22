@@ -311,7 +311,7 @@ void Dialogue(const DialogueID& ID);
 int main()
 {
     Map start("Starting Area", 10, 10, '.');
-    Character hero("Master Cheeze", '*', 0, 25, 10.50);
+    Character player("Player", '*', 0, 25, 10.50);
     Collision collision;
 
     start.Initialize();
@@ -325,14 +325,14 @@ int main()
 
     while (!isGameOver)
     {
-        std::cout << "Score: " << hero.GetScore() << '\n';
-        std::cout << "Money: " << std::format("{:.2f}", hero.GetMoney()) << '\n';
-        std::cout << "Digs Left: " << hero.GetDigsLeft() << "\n\n";
+        std::cout << "Score: " << player.GetScore() << '\n';
+        std::cout << "Money: " << std::format("{:.2f}", player.GetMoney()) << '\n';
+        std::cout << "Digs Left: " << player.GetDigsLeft() << "\n\n";
 
-        int lastY{ hero.GetYCoordinates() };
-        int lastX{ hero.GetXCoordinates() };
+        int lastY{ player.GetYCoordinates() };
+        int lastX{ player.GetXCoordinates() };
 
-        start.PlaceOnMap(hero.GetYCoordinates(), hero.GetXCoordinates(), hero.GetSprite());
+        start.PlaceOnMap(player.GetYCoordinates(), player.GetXCoordinates(), player.GetSprite());
 
         start.DrawMap();
 
@@ -351,76 +351,51 @@ int main()
         char selection{ ' ' };
         std::cin >> selection;
 
-        //if (selection == '1')
-        //{
-        //    hero.ViewTreasure();
-        //}
-        //else if (selection == '2')
-        //{
-        //    if (hero.GetDigsLeft() > 0)
-        //    {
-        //        hero.Dig(start);
-        //    }
-        //    else
-        //    {
-        //        //Not implemented this part of the game, but this dialogue will appear for now anyways.
-        //        std::cout << "You are out of digs! Return to the prospector for another chance.\n";
-        //    }
-        //}
-
-        std::cout << "DEBUG: Selection: " << selection << '\n';
-
-        //Switch statement not working
-        switch (selection)
+        if (selection == '1')
         {
-            case 1:
-                hero.ViewTreasure();
-                break;
-
-            case 2:
-                if (hero.GetDigsLeft() > 0)
-                {
-                    hero.Dig(start);
-                }
-                else
-                {
-                    //Not implemented this part of the game, but this dialogue will appear for now anyways.
-                    std::cout << "You are out of digs! Return to the prospector for another chance.\n";
-                }
-                break;
-
-            case 3:
-                std::cout << "Not implemented yet.\n\n";
-                break;
-
-            case 4:
-                std::cout << "Goodbye.\n";
-                return 0;
-                
-            default:
-                std::cout << "Invalid selection.\n\n";
+            player.ViewTreasure();
+        }
+        else if (selection == '2')
+        {
+            if (player.GetDigsLeft() > 0)
+            {
+                player.Dig(start);
+            }
+            else
+            {
+                //Not implemented this part of the game, but this dialogue will appear for now anyways.
+                std::cout << "You are out of digs! Return to the prospector for another chance.\n";
+            }
+        }
+        else if (selection == '3')
+        {
+            std::cout << "Not implemented yet.\n\n";
+        }
+        else if (selection == '4')
+        {
+            std::cout << "Goodbye.\n";
+            return 0;
         }
 
-
-        if(collision.IsMoveValid(hero, start, selection))
+        if(collision.IsMoveValid(player, start, selection))
         {
             // Update position if the move is valid
             switch (selection)
             {
                 case 'W': case 'w': 
-                    hero.SetCoordinates(hero.GetYCoordinates() - 1, hero.GetXCoordinates()); 
+                    player.SetCoordinates(player.GetYCoordinates() - 1, player.GetXCoordinates());
                     break;
 
                 case 'S': case 's': 
-                    hero.SetCoordinates(hero.GetYCoordinates() + 1, hero.GetXCoordinates()); 
+                    player.SetCoordinates(player.GetYCoordinates() + 1, player.GetXCoordinates());
                     break;
 
                 case 'A': case 'a': 
-                    hero.SetCoordinates(hero.GetYCoordinates(), hero.GetXCoordinates() - 1); 
+                    player.SetCoordinates(player.GetYCoordinates(), player.GetXCoordinates() - 1);
                     break;
 
                 case 'D': case 'd': 
-                    hero.SetCoordinates(hero.GetYCoordinates(), hero.GetXCoordinates() + 1); 
+                    player.SetCoordinates(player.GetYCoordinates(), player.GetXCoordinates() + 1);
                     break;
             }
 
