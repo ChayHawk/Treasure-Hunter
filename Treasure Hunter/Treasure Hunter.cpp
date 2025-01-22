@@ -303,7 +303,7 @@ class Collision
 const enum class DialogueID
 {
     Prosp_0001, //Welcoms player
-    Shop_0001
+    Shop_0001 //Opening shop dialogue
 };
 
 void Dialogue(const DialogueID& ID);
@@ -442,6 +442,10 @@ void Dialogue(const DialogueID& ID)
         case DialogueID::Prosp_0001:
             std::cout << "Welcome to the mining site pal, heres a pickaxe, on the house this time.\n";
             std::cout << "it only lasts a short while so try to make it count out there!\n";
+            break;
+
+        case DialogueID::Shop_0001:
+            std::cout << "Welcome to the shop, what would you like to buy?\n";
             break;
 
         default:
