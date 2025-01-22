@@ -6,16 +6,6 @@
 
 //TODO
 
-//ONE
-//Need to implement dig system. I was thinking to add a check to see if the space has been dug
-//Then create a new map to store dig locations, then replace the current map tiles with the dug 
-//ones. I can make a new map of all the X spots then replace current map tiles with them.
-//I might need to find a way to stop the map from drawing over the x's without leaving a
-//player trail.
-
-//TWO
-//Implement a system where the player has to follow clues to find treasure, and they have only
-//a certain amoiunt of digs they can use before the game is over.
 
 class Map
 {
@@ -40,12 +30,10 @@ class Map
                 {
                     if (mDugSpots[column][row] == true)
                     {
-                        // Display 'X' if the spot is dug
                         std::cout << 'x' << ' ';
                     }
                     else
                     {
-                        // Otherwise, display the regular map tile
                         std::cout << mMap[column][row] << ' ';
                     }
                 }
@@ -216,6 +204,32 @@ class Character
             return mDigsLeft;
         }
 
+        double GetMoney() const
+        {
+            return mMoney;
+        }
+
+        void AddMoney(int amount)
+        {
+            if (amount > 0)
+            {
+                mMoney += amount;
+            }
+        }
+
+        void SubtractMoney(int amount)
+        {
+            if (amount > 0)
+            {
+                mMoney -= amount;
+
+                if (mMoney < 0)
+                {
+                    mMoney = 0;
+                }
+            }
+        }
+
     private:
         std::string mName{ "Character Name" };
         char mSprite{};
@@ -223,6 +237,7 @@ class Character
         int mXPos{ 0 };
         int mScore{ 0 };
         int mDigsLeft{ 10 };
+        double mMoney{ 0.00 };
 
         std::vector<std::pair<Treasure, int>> mTreasureList{};
 };
@@ -319,18 +334,18 @@ int main()
         std::cout << "A). Left\n";
         std::cout << "D). Right\n\n";
 
-        std::cout << "I). View Treasure\n";
-        std::cout << "X). Dig\n";
+        std::cout << "1). View Treasure\n";
+        std::cout << "2). Dig\n";
         std::cout << ">";
 
         char selection{ ' ' };
         std::cin >> selection;
 
-        if (selection == 'I' || selection == 'i')
+        if (selection == '1')
         {
             hero.ViewTreasure();
         }
-        else if (selection == 'X' || selection == 'x')
+        else if (selection == '2')
         {
             if (hero.GetDigsLeft() > 0)
             {
@@ -369,7 +384,7 @@ int main()
         }
         else
         {
-            std::cout << "Cannot go any further in that direction.\n";
+            std::cout << "You cannot proceed in that direction. Please turn back..\n";
         }
     }
 }
