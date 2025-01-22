@@ -3,9 +3,7 @@
 #include <vector>
 #include <algorithm>
 #include <utility>
-
-//TODO
-
+#include <format>
 
 class Map
 {
@@ -17,9 +15,9 @@ class Map
 
         void Initialize()
         {
-            mMap.assign(mHeight, std::vector<char>(mWidth, mTile));
-            mCollidable.assign(mHeight, std::vector<bool>(mWidth, false)); // Initialize collidable map
-            mDugSpots.assign(mHeight, std::vector<bool>(mWidth, false));
+            mBaseLayer.assign(mHeight, std::vector<char>(mWidth, mTile));
+            mCollisionLayer.assign(mHeight, std::vector<bool>(mWidth, false));
+            mInteractionLayer.assign(mHeight, std::vector<bool>(mWidth, false));
         }
 
         void DrawMap()
@@ -28,13 +26,13 @@ class Map
             {
                 for (size_t row = 0; row < mWidth; ++row)
                 {
-                    if (mDugSpots[column][row] == true)
+                    if (mInteractionLayer[column][row] == true)
                     {
                         std::cout << 'x' << ' ';
                     }
                     else
                     {
-                        std::cout << mMap[column][row] << ' ';
+                        std::cout << mBaseLayer[column][row] << ' ';
                     }
                 }
                 std::cout << '\n';
@@ -43,19 +41,19 @@ class Map
 
         void PlaceOnMap(int posY, int posX, char object, bool collidable = false)
         {
-            mMap[posY][posX] = object;
-            mCollidable[posY][posX] = collidable;
+            mBaseLayer[posY][posX] = object;
+            mCollisionLayer[posY][posX] = collidable;
         }
 
 
         void MarkAsDug(int posY, int posX)
         {
-            mDugSpots[posY][posX] = true;
+            mInteractionLayer[posY][posX] = true;
         }
 
         bool IsDug(int posY, int posX) const
         {
-            return mDugSpots[posY][posX];
+            return mInteractionLayer[posY][posX];
         }
 
         int GetHeight() const
@@ -70,7 +68,7 @@ class Map
 
         bool IsCollidable(int posY, int posX) const
         {
-            return mCollidable[posY][posX];
+            return mCollisionLayer[posY][posX];
         }
 
         char GetTile() const
@@ -84,9 +82,9 @@ class Map
         int mWidth{ 10 };
         char mTile{ '.' };
 
-        std::vector<std::vector<char>> mMap;
-        std::vector<std::vector<bool>> mCollidable;
-        std::vector<std::vector<bool>> mDugSpots;
+        std::vector<std::vector<char>> mBaseLayer;
+        std::vector<std::vector<bool>> mCollisionLayer;
+        std::vector<std::vector<bool>> mInteractionLayer;
 };
 
 
@@ -115,7 +113,8 @@ class Treasure
 class Character
 {
     public:
-        Character(const std::string& name, char sprite) : mName(name), mSprite(sprite)
+        Character(const std::string& name, char sprite, int score, int digsLeft, double money) 
+            : mName(name), mSprite(sprite), mScore(score), mDigsLeft(digsLeft), mMoney(money)
         {}
 
         std::string GetName() const
@@ -237,7 +236,7 @@ class Character
         int mXPos{ 0 };
         int mScore{ 0 };
         int mDigsLeft{ 10 };
-        double mMoney{ 0.00 };
+        double mMoney{ 0.00L };
 
         std::vector<std::pair<Treasure, int>> mTreasureList{};
 };
@@ -301,10 +300,18 @@ class Collision
 };
 
 
+const enum class DialogueID
+{
+    Prosp_0001, //Welcoms player
+    Shop_0001
+};
+
+void Dialogue(const DialogueID& ID);
+
 int main()
 {
     Map start("Starting Area", 10, 10, '.');
-    Character hero("Master Cheeze", '*');
+    Character hero("Master Cheeze", '*', 0, 25, 10.50);
     Collision collision;
 
     start.Initialize();
@@ -319,6 +326,7 @@ int main()
     while (!isGameOver)
     {
         std::cout << "Score: " << hero.GetScore() << '\n';
+        std::cout << "Money: " << std::format("{:.2f}", hero.GetMoney()) << '\n';
         std::cout << "Digs Left: " << hero.GetDigsLeft() << "\n\n";
 
         int lastY{ hero.GetYCoordinates() };
@@ -336,28 +344,65 @@ int main()
 
         std::cout << "1). View Treasure\n";
         std::cout << "2). Dig\n";
+        std::cout << "3). Shop\n"; //Not Implemented
+        std::cout << "4). Exit\n"; //Not Implemented
         std::cout << ">";
 
         char selection{ ' ' };
         std::cin >> selection;
 
-        if (selection == '1')
+        //if (selection == '1')
+        //{
+        //    hero.ViewTreasure();
+        //}
+        //else if (selection == '2')
+        //{
+        //    if (hero.GetDigsLeft() > 0)
+        //    {
+        //        hero.Dig(start);
+        //    }
+        //    else
+        //    {
+        //        //Not implemented this part of the game, but this dialogue will appear for now anyways.
+        //        std::cout << "You are out of digs! Return to the prospector for another chance.\n";
+        //    }
+        //}
+
+        std::cout << "DEBUG: Selection: " << selection << '\n';
+
+        //Switch statement not working
+        switch (selection)
         {
-            hero.ViewTreasure();
+            case 1:
+                hero.ViewTreasure();
+                break;
+
+            case 2:
+                if (hero.GetDigsLeft() > 0)
+                {
+                    hero.Dig(start);
+                }
+                else
+                {
+                    //Not implemented this part of the game, but this dialogue will appear for now anyways.
+                    std::cout << "You are out of digs! Return to the prospector for another chance.\n";
+                }
+                break;
+
+            case 3:
+                std::cout << "Not implemented yet.\n\n";
+                break;
+
+            case 4:
+                std::cout << "Goodbye.\n";
+                return 0;
+                
+            default:
+                std::cout << "Invalid selection.\n\n";
         }
-        else if (selection == '2')
-        {
-            if (hero.GetDigsLeft() > 0)
-            {
-                hero.Dig(start);
-            }
-            else
-            {
-                //Not implemented this part of the game, but this dialogue will appear for now anyways.
-                std::cout << "You are out of digs! Return to the prospector for another chance.\n";
-            }
-        }
-        else if(collision.IsMoveValid(hero, start, selection))
+
+
+        if(collision.IsMoveValid(hero, start, selection))
         {
             // Update position if the move is valid
             switch (selection)
@@ -384,7 +429,22 @@ int main()
         }
         else
         {
-            std::cout << "You cannot proceed in that direction. Please turn back..\n";
+            std::cout << "You cannot proceed in that direction. Please turn back.\n";
         }
+    }
+}
+
+
+void Dialogue(const DialogueID& ID)
+{
+    switch (ID)
+    {
+        case DialogueID::Prosp_0001:
+            std::cout << "Welcome to the mining site pal, heres a pickaxe, on the house this time.\n";
+            std::cout << "it only lasts a short while so try to make it count out there!\n";
+            break;
+
+        default:
+            std::cout << "Unable to obtain dialogue ID.\n\n";
     }
 }
