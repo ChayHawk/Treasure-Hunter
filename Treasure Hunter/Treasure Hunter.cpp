@@ -3,6 +3,19 @@
 #include <vector>
 #include <algorithm>
 
+//BUGS/ISSUES
+//
+//ONE
+//The dig system allows the player to dig through collision tiles, which is not
+//Ideal in most cases
+
+//TWO
+//The dig system doesnt allow for the placement of a dig spot directly underneath 
+//the player
+
+//THREE
+//
+
 class Map
 {
     public:
@@ -183,11 +196,6 @@ class Character
         int GetX() const { return mPosX; }
         char GetSprite() const { return mSprite; }
 
-        void AddToInventory(const std::string& itemName, int amount)
-        {
-
-        }
-
         void Dig(int y, int x, Map& map)
         {
             map.ModifyTile(y - 1, x, ' ', false, true, 0, false, true);
@@ -251,38 +259,41 @@ void Toggle(int y, int x, char onTile, char offTile, bool collisionOnState, bool
     }
 }
 
+//KEY
+//NPC = Type
+//_01 = after NPC this is the code for the character itself
+
 const enum class DialogueID
 {
     NPC_01_Dialogue_01,
-    NPC_01_Dialogue_02,
 };
 
 void Dialogue(const DialogueID& ID)
 {
     switch (ID)
     {
-    case DialogueID::NPC_01_Dialogue_01:
-    {
-        std::cout << "Hey there guy, would you like to see what im selling?\n";
-
-        int choice{ 0 };
-
-        std::cout << "1.) Sure, why not?\n";
-        std::cout << "2.) I'll pass\n";
-
-        std::cin >> choice;
-
-        if (choice == 1)
+        case DialogueID::NPC_01_Dialogue_01:
         {
-            std::cout << "Welcome to the shop, what would you like to buy?\n";
+            std::cout << "Hey there guy, would you like to see what im selling?\n";
+
+            int choice{ 0 };
+
+            std::cout << "1.) Sure, why not?\n";
+            std::cout << "2.) I'll pass\n";
+
+            std::cin >> choice;
+
+            if (choice == 1)
+            {
+                std::cout << "Welcome to the shop, what would you like to buy?\n";
+            }
+            else if(choice == 2)
+            {
+                std::cout << "Come back if ya change yer mind.\n";
+                return;
+            }
         }
-        else if(choice == 2)
-        {
-            std::cout << "Come back if ya change yer mind.\n";
-            return;
-        }
-    }
-    break;
+        break;
     }
 }
 
@@ -302,6 +313,7 @@ int main()
         myMap.Draw();
 
         std::cout << "\nMove (W/A/S/D) or Interact (E): ";
+        std::cout << "\n\n";
         char input;
         std::cin >> input;
 
@@ -324,6 +336,10 @@ int main()
             {
                 Dialogue(DialogueID::NPC_01_Dialogue_01);
             }
+        }
+        else if (input == 'F' || input == 'f')
+        {
+            player.Dig(player.GetY(), player.GetX(), myMap);
         }
         else
         {
