@@ -128,64 +128,50 @@ class Character
     public:
         Character(const std::string& name, char sprite, int y, int x)
             : mName(name), mSprite(sprite), mPosY(y), mPosX(x)
-        {
-        }
-
-        //TODO
-        //Implement a system that redraws the tiles original tile after the player moves.
-
+        {}
+                                                   
         void Move(char direction, Map& map)
         {
-            int nextY{ mPosY };
-            int nextX{ mPosX };
-
-            char nextTile{};
+            int nextY = mPosY;
+            int nextX = mPosX;
 
             switch (direction)
             {
                 case 'W':
                 case 'w':
                     --nextY;
-                    nextTile = map.GetTile(nextY, nextX);
-                    std::cout << "Next Tile W: " << nextTile << '\n';
                     break;
                 case 'S':
                 case 's':
                     ++nextY;
-                    nextTile = map.GetTile(nextY, nextX);
-                    std::cout << "Next Tile S: " << nextTile << '\n';
                     break;
                 case 'A':
                 case 'a':
                     --nextX;
-                    nextTile = map.GetTile(nextY, nextX);
-                    std::cout << "Next Tile A: " << nextTile << '\n';
                     break;
                 case 'D':
                 case 'd':
                     ++nextX;
-                    nextTile = map.GetTile(nextY, nextX);
                     break;
                 default:
                     std::cout << "Invalid choice!\n";
-                    std::cout << "Next Tile D: " << nextTile << '\n';
                     return;
             }
 
-            int lastY{ mPosY };
-            int lastX{ mPosX };
-
-            std::cout << "Next Tile: " << nextTile << '\n';
-            std::cout << "Current Y: " << mPosY << '\n';
-            std::cout << "Current X: " << mPosX << '\n';
-            std::cout << "Last Y: " << lastY << '\n';
-            std::cout << "Last X: " << lastX << '\n';
-
             if (IsMoveValid(nextY, nextX, map))
             {
+                // Restore the previous tile at the current position
+                map.ModifyTile(mPosY, mPosX, mPreviousTile);
+
+                // Save the tile at the new position
+                mPreviousTile = map.GetTile(nextY, nextX);
+
+                // Move the player to the new position
                 mPosY = nextY;
                 mPosX = nextX;
-                map.ModifyTile(lastY, lastX, nextTile);
+
+                // Set the player's sprite at the new position
+                map.ModifyTile(mPosY, mPosX, mSprite);
             }
             else
             {
@@ -213,6 +199,7 @@ class Character
         char mSprite{};
         int mPosY{};
         int mPosX{};
+        char mPreviousTile;
 
         std::vector<std::string> mInventory;
 
