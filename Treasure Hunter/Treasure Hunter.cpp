@@ -2,428 +2,334 @@
 #include <string>
 #include <vector>
 #include <algorithm>
-#include <utility>
-#include <format>
 
 class Map
 {
-    public:
-        Map(const std::string& name, int height, int width, char tile)
-            : mName(name), mHeight(height), mWidth(width), mTile(tile)
-        {
-        }
+public:
+    Map(const std::string& name, int height, int width, char tile)
+        : mName(name), mHeight(height), mWidth(width), mTile(tile) {
+    }
 
-        void Initialize()
-        {
-            mBaseLayer.assign(mHeight, std::vector<char>(mWidth, mTile));
-            mCollisionLayer.assign(mHeight, std::vector<bool>(mWidth, false));
-            mInteractionLayer.assign(mHeight, std::vector<bool>(mWidth, false));
-        }
+    void Initialize()
+    {
+        mMap.assign(mHeight, std::vector<Tile>(mWidth, { mTile, false, false, 0, false }));
 
-        void DrawMap()
+        int idCounter{ 100 };
+        for (size_t column = 0; column < mHeight; ++column)
         {
-            for (size_t column = 0; column < mHeight; ++column)
+            for (size_t row = 0; row < mWidth; ++row)
             {
-                for (size_t row = 0; row < mWidth; ++row)
-                {
-                    if (mInteractionLayer[column][row] == true)
-                    {
-                        std::cout << 'x' << ' ';
-                    }
-                    else
-                    {
-                        std::cout << mBaseLayer[column][row] << ' ';
-                    }
-                }
-                std::cout << '\n';
+                mMap[column][row].tileID = ++idCounter;
             }
         }
+    }
 
-        void PlaceOnMap(int posY, int posX, char object, bool collidable = false)
+    void Draw()
+    {
+        for (size_t column = 0; column < mHeight; ++column)
         {
-            mBaseLayer[posY][posX] = object;
-            mCollisionLayer[posY][posX] = collidable;
+            for (size_t row = 0; row < mWidth; ++row)
+            {
+                if (mMap[column][row].doNotRedraw == true)
+                {
+                    mMap[column][row].tile = ' ';
+                }
+
+                std::cout << mMap[column][row].tile << ' ';
+            }
+            std::cout << '\n';
+        }
+    }
+
+    void ModifyTile(int y, int x, char newTile = '\0', bool collisionState = false, bool interactionState = false, int interactCount = 0, bool isCollectible = false, bool doNotRedraw = false)
+    {
+        if (!IsInBounds(y, x))
+        {
+            std::cout << "Coordinates are out of bounds!\n";
+            return;
         }
 
-
-        void MarkAsDug(int posY, int posX)
+        if (newTile != '\0')
         {
-            mInteractionLayer[posY][posX] = true;
+            mMap[y][x].tile = newTile;
         }
 
-        bool IsDug(int posY, int posX) const
-        {
-            return mInteractionLayer[posY][posX];
-        }
+        mMap[y][x].collisionState = collisionState;
+        mMap[y][x].interactionState = interactionState;
+        mMap[y][x].doNotRedraw = doNotRedraw;
+    }
 
-        int GetHeight() const
-        {
-            return mHeight;
-        }
+    bool GetInteractionState(int y, int x) const
+    {
+        return mMap[y][x].interactionState;
+    }
 
-        int GetWidth() const
-        {
-            return mWidth;
-        }
+    bool GetCollisionState(int y, int x) const
+    {
+        return mMap[y][x].collisionState;
+    }
 
-        bool IsCollidable(int posY, int posX) const
-        {
-            return mCollisionLayer[posY][posX];
-        }
+    int GetHeight() const { return mHeight; }
+    int GetWidth() const { return mWidth; }
 
-        char GetTile() const
-        {
-            return mTile;
-        }
+    int GetTileID(int y, int x) const
+    {
+        return mMap[y][x].tileID;
+    }
 
-    private:
-        std::string mName{ "Map Name" };
-        int mHeight{ 10 };
-        int mWidth{ 10 };
-        char mTile{ '.' };
+    bool GetDoNotRedrawState(int y, int x) const
+    {
+        return mMap[y][x].doNotRedraw;
+    }
 
-        std::vector<std::vector<char>> mBaseLayer;
-        std::vector<std::vector<bool>> mCollisionLayer;
-        std::vector<std::vector<bool>> mInteractionLayer;
+    void SetNewTile(int y, int x, char newTile)
+    {
+        mMap[y][x].tile = newTile;
+    }
+
+    char GetTile(int y, int x) const
+    {
+        return mMap[y][x].tile;
+    }
+
+private:
+    struct Tile
+    {
+        char tile{};
+        bool collisionState{ false };
+        bool interactionState{ false };
+        int interactCount{ 0 };
+        bool isCollectible{ false };
+        int tileID{};
+        bool doNotRedraw{ false };
+    };
+
+    std::string mName{};
+    int mHeight{};
+    int mWidth{};
+    char mTile{};
+    std::vector<std::vector<Tile>> mMap;
+
+    bool IsInBounds(int y, int x) const
+    {
+        return y >= 0 && y < mHeight && x >= 0 && x < mWidth;
+    }
 };
-
-
-class Treasure
-{
-    public:
-        Treasure(const std::string name, int value) : mName(name), mValue(value)
-        { }
-
-        std::string GetName() const
-        {
-            return mName;
-        }
-
-        int GetValue() const
-        {
-            return mValue;
-        }
-
-    private:
-        std::string mName{};
-        int mValue{};
-};
-
 
 class Character
 {
-    public:
-        Character(const std::string& name, char sprite, int score, int digsLeft, double money) 
-            : mName(name), mSprite(sprite), mScore(score), mDigsLeft(digsLeft), mMoney(money)
-        {}
-
-        std::string GetName() const
-        {
-            return mName;
-        }
-
-        char GetSprite() const
-        {
-            return mSprite;
-        }
-
-        int GetYCoordinates() const
-        {
-            return mYPos;
-        }
-
-        int GetXCoordinates() const
-        {
-            return mXPos;
-        }
-
-        void SetCoordinates(int posY, int posX)
-        {
-            mYPos = posY;
-            mXPos = posX;
-        }
-
-        void TakeTreasure(const Treasure& treasure, int amount)
-        {
-            auto findDuplicate = [&treasure](const std::pair<Treasure, int>& a)
-                {
-                    return treasure.GetName() == a.first.GetName();
-                };
-
-            auto itr = std::find_if(mTreasureList.begin(), mTreasureList.end(), findDuplicate);
-
-            if (itr != mTreasureList.end())
-            {
-                itr->second += amount;
-            }
-            else
-            {
-                mTreasureList.push_back(std::make_pair(treasure, amount));
-            }
-        }
-
-        void ViewTreasure() const
-        {
-            if (mTreasureList.empty())
-            {
-                std::cout << "I don't have any treasure yet.\n";
-                return;
-            }
-
-            for (auto& i : mTreasureList)
-            {
-                std::cout << i.first.GetName() << "x(" << i.second << ")\n";
-            }
-        }
-
-        void Dig(Map& map)
-        {
-            int y = GetYCoordinates();
-            int x = GetXCoordinates();
-
-            if (!map.IsDug(y, x))
-            {
-                map.MarkAsDug(y, x);
-                std::cout << "You dug a hole at (" << y << ", " << x << ").\n";
-                --mDigsLeft;
-            }
-            else
-            {
-                std::cout << "This spot has already been dug.\n";
-            }
-        }
-
-        int GetScore() const
-        {
-            return mScore;
-        }
-
-        int GetDigsLeft() const
-        {
-            return mDigsLeft;
-        }
-
-        double GetMoney() const
-        {
-            return mMoney;
-        }
-
-        void AddMoney(int amount)
-        {
-            if (amount > 0)
-            {
-                mMoney += amount;
-            }
-        }
-
-        void SubtractMoney(int amount)
-        {
-            if (amount > 0)
-            {
-                mMoney -= amount;
-
-                if (mMoney < 0)
-                {
-                    mMoney = 0;
-                }
-            }
-        }
-
-    private:
-        std::string mName{ "Character Name" };
-        char mSprite{};
-        int mYPos{ 0 };
-        int mXPos{ 0 };
-        int mScore{ 0 };
-        int mDigsLeft{ 10 };
-        double mMoney{ 0.00L };
-
-        std::vector<std::pair<Treasure, int>> mTreasureList{};
-};
-
-class Collision
-{
-    public:
-        bool IsMoveValid(Character& character, const Map& map, char direction)
-        {
-            int assesNextMoveY = character.GetYCoordinates();
-            int assesNextMoveX = character.GetXCoordinates();
-
-            // Predict the new coordinates
-            switch (direction)
-            {
-                case 'W': case 'w': 
-                    assesNextMoveY--;
-                    break;
-
-                case 'S': case 's': 
-                    assesNextMoveY++;
-                    break;
-
-                case 'A': case 'a': 
-                    assesNextMoveX--;
-                    break;
-
-                case 'D': case 'd': 
-                    assesNextMoveX++;
-                    break;
-
-                default:
-                    std::cout << "Invalid direction.\n";
-                    return false;
-            }
-
-            if (!IsWithinMapBounds(assesNextMoveY, assesNextMoveX, map))
-            {
-                return false;
-            }
-
-            if (IsCollidableObject(assesNextMoveY, assesNextMoveX, map))
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-    private:
-        bool IsWithinMapBounds(int proposedY, int proposedX, const Map& map)
-        {
-            return proposedY >= 0 && proposedY < map.GetHeight() &&
-                proposedX >= 0 && proposedX < map.GetWidth();
-        }
-
-        bool IsCollidableObject(int proposedY, int proposedX, const Map& map)
-        {
-            return map.IsCollidable(proposedY, proposedX);
-        }
-};
-
-
-const enum class DialogueID
-{
-    Prosp_0001, //Welcoms player
-    Shop_0001 //Opening shop dialogue
-};
-
-void Dialogue(const DialogueID& ID);
-
-int main()
-{
-    Map start("Starting Area", 10, 10, '.');
-    Character player("Player", '*', 0, 25, 10.50);
-    Collision collision;
-
-    start.Initialize();
-
-    // Add some collidable objects
-    start.PlaceOnMap(2, 2, 'T', true); // Tree at (2,2)
-    start.PlaceOnMap(5, 5, 'R', true); // Rock at (5,5)
-    start.PlaceOnMap(6, 6, 'Z', true);
-
-    bool isGameOver{ false };
-
-    while (!isGameOver)
+public:
+    Character(const std::string& name, char sprite, int y, int x)
+        : mName(name), mSprite(sprite), mPosY(y), mPosX(x)
     {
-        std::cout << "Score: " << player.GetScore() << '\n';
-        std::cout << "Money: " << std::format("{:.2f}", player.GetMoney()) << '\n';
-        std::cout << "Digs Left: " << player.GetDigsLeft() << "\n\n";
+    }
 
-        int lastY{ player.GetYCoordinates() };
-        int lastX{ player.GetXCoordinates() };
+    void Move(char direction, const Map& map)
+    {
+        int nextY = mPosY;
+        int nextX = mPosX;
 
-        start.PlaceOnMap(player.GetYCoordinates(), player.GetXCoordinates(), player.GetSprite());
+        char nextTile{};
 
-        start.DrawMap();
-
-        std::cout << '\n';
-        std::cout << "W). Up\n";
-        std::cout << "S). Down\n";
-        std::cout << "A). Left\n";
-        std::cout << "D). Right\n\n";
-
-        std::cout << "1). View Treasure\n";
-        std::cout << "2). Dig\n";
-        std::cout << "3). Shop\n"; //Not Implemented
-        std::cout << "4). Exit\n"; //Not Implemented
-        std::cout << ">";
-
-        char selection{ ' ' };
-        std::cin >> selection;
-
-        if (selection == '1')
+        switch (direction)
         {
-            player.ViewTreasure();
-        }
-        else if (selection == '2')
-        {
-            if (player.GetDigsLeft() > 0)
-            {
-                player.Dig(start);
-            }
-            else
-            {
-                //Not implemented this part of the game, but this dialogue will appear for now anyways.
-                std::cout << "You are out of digs! Return to the prospector for another chance.\n";
-            }
-        }
-        else if (selection == '3')
-        {
-            std::cout << "Not implemented yet.\n\n";
-        }
-        else if (selection == '4')
-        {
-            std::cout << "Goodbye.\n";
-            return 0;
+            case 'W':
+            case 'w':
+                --nextY;
+                break;
+            case 'S':
+            case 's':
+                ++nextY;
+                break;
+            case 'A':
+            case 'a':
+                --nextX;
+                break;
+            case 'D':
+            case 'd':
+                ++nextX;
+                break;
+            default:
+                std::cout << "Invalid choice!\n";
+                return;
         }
 
-        if(collision.IsMoveValid(player, start, selection))
+        if (IsMoveValid(nextY, nextX, map))
         {
-            // Update position if the move is valid
-            switch (selection)
-            {
-                case 'W': case 'w': 
-                    player.SetCoordinates(player.GetYCoordinates() - 1, player.GetXCoordinates());
-                    break;
-
-                case 'S': case 's': 
-                    player.SetCoordinates(player.GetYCoordinates() + 1, player.GetXCoordinates());
-                    break;
-
-                case 'A': case 'a': 
-                    player.SetCoordinates(player.GetYCoordinates(), player.GetXCoordinates() - 1);
-                    break;
-
-                case 'D': case 'd': 
-                    player.SetCoordinates(player.GetYCoordinates(), player.GetXCoordinates() + 1);
-                    break;
-            }
-
-            //Reset map tile back to default after player walks over it.
-            start.PlaceOnMap(lastY, lastX, start.GetTile());
+            mPosY = nextY;
+            mPosX = nextX;
         }
         else
         {
-            std::cout << "You cannot proceed in that direction. Please turn back.\n";
+            std::cout << "Movement blocked!\n";
         }
+    }
+
+    int GetY() const { return mPosY; }
+    int GetX() const { return mPosX; }
+    char GetSprite() const { return mSprite; }
+
+    void AddToInventory(const std::string& itemName, int amount)
+    {
+
+    }
+
+    void Dig(int y, int x, Map& map)
+    {
+        //I set y to -1 to test if its actually modifying the tile, it can be set back when debugging is complete. 
+        map.ModifyTile(y - 1, x, ' ', false, true, 0, false, true);
+    }
+
+private:
+    std::string mName{};
+    char mSprite{};
+    int mPosY{};
+    int mPosX{};
+
+    std::vector<std::string> mInventory;
+
+    bool IsMoveValid(int y, int x, const Map& map) const
+    {
+        return y >= 0 && y < map.GetHeight() && x >= 0 && x < map.GetWidth() && !map.GetCollisionState(y, x);
+    }
+};
+
+void TestMap(Map& map)
+{
+    map.ModifyTile(2, 0, '_', true, false, 0, false, true);
+    map.ModifyTile(2, 1, '_', true, false, 0, false, true);
+    map.ModifyTile(2, 2, '_', true, false, 0, false, true);
+    map.ModifyTile(2, 3, '#', true, false, 0, false, true);
+    map.ModifyTile(2, 4, '_', true);
+    map.ModifyTile(2, 5, '#', true);
+    map.ModifyTile(2, 6, '_', true);
+    map.ModifyTile(2, 7, '_', true);
+    map.ModifyTile(2, 8, '_', true);
+    map.ModifyTile(2, 9, '_', true);
+    map.ModifyTile(2, 10, '_', true);
+    map.ModifyTile(2, 11, '|', true);
+    map.ModifyTile(1, 11, '|', true);
+    map.ModifyTile(0, 11, '|', true);
+
+    map.ModifyTile(1, 5, '|', true);
+    map.ModifyTile(0, 5, 'I', true);
+
+    map.ModifyTile(0, 2, '*', true);
+}
+
+//Need to implement a system where individual objects can be made and placed on the map, and they will act independantly
+//of each other, so for example say i place 2 doors and 2 switches, the doors will be tied to their respective
+//switches via the tile ID. There should be a function for each object that can take a y and x param, a tileID and
+//any other information. 
+
+//IDEA
+//I either can hard program in mechanics like doors or make a single function that does 
+//different things.
+
+void Toggle(int y, int x, char onTile, char offTile, bool collisionOnState, bool collisionOffState, Map& map)
+{
+    if (map.GetInteractionState(y, x))
+    {
+        // Currently "on", so toggle to "off"
+        map.ModifyTile(y, x, offTile, collisionOffState, false);
+    }
+    else
+    {
+        // Currently "off", so toggle to "on"
+        map.ModifyTile(y, x, onTile, collisionOnState, true);
     }
 }
 
+//KEY
+//NPC = Type
+//_01 = after NPC this is the code for the character itself
+
+const enum class DialogueID
+{
+    NPC_01_Dialogue_01,
+};
 
 void Dialogue(const DialogueID& ID)
 {
     switch (ID)
     {
-        case DialogueID::Prosp_0001:
-            std::cout << "Welcome to the mining site pal, heres a pickaxe, on the house this time.\n";
-            std::cout << "it only lasts a short while so try to make it count out there!\n";
-            break;
+    case DialogueID::NPC_01_Dialogue_01:
+    {
+        std::cout << "Hey there guy, would you like to see what im selling?\n";
 
-        case DialogueID::Shop_0001:
+        int choice{ 0 };
+
+        std::cout << "1.) Sure, why not?\n";
+        std::cout << "2.) I'll pass\n";
+
+        if (choice == 1)
+        {
             std::cout << "Welcome to the shop, what would you like to buy?\n";
-            break;
-
-        default:
-            std::cout << "Unable to obtain dialogue ID.\n\n";
+        }
+        else
+        {
+            return;
+        }
     }
+    break;
+    }
+}
+
+int main()
+{
+    Map myMap("Test Map", 20, 20, '.');
+    myMap.Initialize();
+    TestMap(myMap);
+
+    Character player("Hero", '*', 4, 4);
+
+    bool isGameOver = false;
+
+    while (!isGameOver)
+    {
+        myMap.ModifyTile(player.GetY(), player.GetX(), player.GetSprite());
+        myMap.Draw();
+
+        std::cout << "\nMove (W/A/S/D) or Interact (E): ";
+        char input;
+        std::cin >> input;
+
+        //Interactions are being hard coded for now, but later i need to find a way to package everything 
+        //together so the game takes care of all that for me. For example, placing an entity and it easily
+        //allowing me to attach another entity to it to trigger it, for example, a switch triggering a
+        //remote door.
+        if (input == 'E' || input == 'e')
+        {
+            player.Dig(player.GetY(), player.GetX(), myMap);
+
+            if (player.GetY() == 3 && player.GetX() == 3)
+            {
+                Toggle(2, 4, '=', ' ', true, false, myMap);
+            }
+            else if (player.GetY() == 0 && player.GetX() == 4 || player.GetY() == 0 && player.GetX() == 6)
+            {
+                Toggle(0, 5, 'I', ' ', true, false, myMap);
+            }
+            else if (player.GetY() == 1 && player.GetX() == 2)
+            {
+                Dialogue(DialogueID::NPC_01_Dialogue_01);
+            }
+        }
+        else
+        {
+            //Might need to stop redrawing of tile here. Will need to find a better solution that cleans up after itself.
+            //if (myMap.GetDoNotRedrawState(player.GetY(), player.GetX()) == false)
+            //{
+            //    int nextTileY{ player.GetY() };
+            //    int nextTileX{ player.GetX() };
+
+            //    char temporaryTile{};
+
+            //    myMap.ModifyTile(player.GetY(), player.GetX(), '.'); // Reset tile
+            //}
+            player.Move(input, myMap);
+        }
+    }
+
+    return 0;
 }
