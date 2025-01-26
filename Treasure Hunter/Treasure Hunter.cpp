@@ -89,7 +89,14 @@ public:
 
     char GetTile(int y, int x) const
     {
-        return mMap[y][x].tile;
+        if (IsInBounds(y, x))
+        {
+            return mMap[y][x].tile;
+        }
+        else
+        {
+            std::cout << "Out of bounds\n";
+        }
     }
 
 private:
@@ -118,80 +125,101 @@ private:
 
 class Character
 {
-public:
-    Character(const std::string& name, char sprite, int y, int x)
-        : mName(name), mSprite(sprite), mPosY(y), mPosX(x)
-    {
-    }
-
-    void Move(char direction, const Map& map)
-    {
-        int nextY = mPosY;
-        int nextX = mPosX;
-
-        char nextTile{};
-
-        switch (direction)
+    public:
+        Character(const std::string& name, char sprite, int y, int x)
+            : mName(name), mSprite(sprite), mPosY(y), mPosX(x)
         {
-            case 'W':
-            case 'w':
-                --nextY;
-                break;
-            case 'S':
-            case 's':
-                ++nextY;
-                break;
-            case 'A':
-            case 'a':
-                --nextX;
-                break;
-            case 'D':
-            case 'd':
-                ++nextX;
-                break;
-            default:
-                std::cout << "Invalid choice!\n";
-                return;
         }
 
-        if (IsMoveValid(nextY, nextX, map))
+        //TODO
+        //Implement a system that redraws the tiles original tile after the player moves.
+
+        void Move(char direction, Map& map)
         {
-            mPosY = nextY;
-            mPosX = nextX;
+            int nextY{ mPosY };
+            int nextX{ mPosX };
+
+            char nextTile{};
+
+            switch (direction)
+            {
+                case 'W':
+                case 'w':
+                    --nextY;
+                    nextTile = map.GetTile(nextY, nextX);
+                    std::cout << "Next Tile W: " << nextTile << '\n';
+                    break;
+                case 'S':
+                case 's':
+                    ++nextY;
+                    nextTile = map.GetTile(nextY, nextX);
+                    std::cout << "Next Tile S: " << nextTile << '\n';
+                    break;
+                case 'A':
+                case 'a':
+                    --nextX;
+                    nextTile = map.GetTile(nextY, nextX);
+                    std::cout << "Next Tile A: " << nextTile << '\n';
+                    break;
+                case 'D':
+                case 'd':
+                    ++nextX;
+                    nextTile = map.GetTile(nextY, nextX);
+                    break;
+                default:
+                    std::cout << "Invalid choice!\n";
+                    std::cout << "Next Tile D: " << nextTile << '\n';
+                    return;
+            }
+
+            int lastY{ mPosY };
+            int lastX{ mPosX };
+
+            std::cout << "Next Tile: " << nextTile << '\n';
+            std::cout << "Current Y: " << mPosY << '\n';
+            std::cout << "Current X: " << mPosX << '\n';
+            std::cout << "Last Y: " << lastY << '\n';
+            std::cout << "Last X: " << lastX << '\n';
+
+            if (IsMoveValid(nextY, nextX, map))
+            {
+                mPosY = nextY;
+                mPosX = nextX;
+                map.ModifyTile(lastY, lastX, nextTile);
+            }
+            else
+            {
+                std::cout << "Movement blocked!\n";
+            }
         }
-        else
+
+        int GetY() const { return mPosY; }
+        int GetX() const { return mPosX; }
+        char GetSprite() const { return mSprite; }
+
+        void AddToInventory(const std::string& itemName, int amount)
         {
-            std::cout << "Movement blocked!\n";
+
         }
-    }
 
-    int GetY() const { return mPosY; }
-    int GetX() const { return mPosX; }
-    char GetSprite() const { return mSprite; }
+        void Dig(int y, int x, Map& map)
+        {
+            //I set y to -1 to test if its actually modifying the tile, it can be set back when debugging is complete. 
+            map.ModifyTile(y - 1, x, ' ', false, true, 0, false, true);
+        }
 
-    void AddToInventory(const std::string& itemName, int amount)
-    {
+    private:
+        std::string mName{};
+        char mSprite{};
+        int mPosY{};
+        int mPosX{};
 
-    }
+        std::vector<std::string> mInventory;
 
-    void Dig(int y, int x, Map& map)
-    {
-        //I set y to -1 to test if its actually modifying the tile, it can be set back when debugging is complete. 
-        map.ModifyTile(y - 1, x, ' ', false, true, 0, false, true);
-    }
-
-private:
-    std::string mName{};
-    char mSprite{};
-    int mPosY{};
-    int mPosX{};
-
-    std::vector<std::string> mInventory;
-
-    bool IsMoveValid(int y, int x, const Map& map) const
-    {
-        return y >= 0 && y < map.GetHeight() && x >= 0 && x < map.GetWidth() && !map.GetCollisionState(y, x);
-    }
+        bool IsMoveValid(int y, int x, const Map& map) const
+        {
+            return y >= 0 && y < map.GetHeight() && x >= 0 && x < map.GetWidth() && !map.GetCollisionState(y, x);
+        }
 };
 
 void TestMap(Map& map)
@@ -217,14 +245,11 @@ void TestMap(Map& map)
     map.ModifyTile(0, 2, '*', true);
 }
 
+
 //Need to implement a system where individual objects can be made and placed on the map, and they will act independantly
 //of each other, so for example say i place 2 doors and 2 switches, the doors will be tied to their respective
 //switches via the tile ID. There should be a function for each object that can take a y and x param, a tileID and
 //any other information. 
-
-//IDEA
-//I either can hard program in mechanics like doors or make a single function that does 
-//different things.
 
 void Toggle(int y, int x, char onTile, char offTile, bool collisionOnState, bool collisionOffState, Map& map)
 {
@@ -262,12 +287,15 @@ void Dialogue(const DialogueID& ID)
         std::cout << "1.) Sure, why not?\n";
         std::cout << "2.) I'll pass\n";
 
+        std::cin >> choice;
+
         if (choice == 1)
         {
             std::cout << "Welcome to the shop, what would you like to buy?\n";
         }
-        else
+        else if(choice == 2)
         {
+            std::cout << "Come back if ya change yer mind.\n";
             return;
         }
     }
@@ -294,6 +322,7 @@ int main()
         char input;
         std::cin >> input;
 
+        //NOTE
         //Interactions are being hard coded for now, but later i need to find a way to package everything 
         //together so the game takes care of all that for me. For example, placing an entity and it easily
         //allowing me to attach another entity to it to trigger it, for example, a switch triggering a
@@ -317,16 +346,6 @@ int main()
         }
         else
         {
-            //Might need to stop redrawing of tile here. Will need to find a better solution that cleans up after itself.
-            //if (myMap.GetDoNotRedrawState(player.GetY(), player.GetX()) == false)
-            //{
-            //    int nextTileY{ player.GetY() };
-            //    int nextTileX{ player.GetX() };
-
-            //    char temporaryTile{};
-
-            //    myMap.ModifyTile(player.GetY(), player.GetX(), '.'); // Reset tile
-            //}
             player.Move(input, myMap);
         }
     }
