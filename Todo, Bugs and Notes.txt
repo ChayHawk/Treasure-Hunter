@@ -1,0 +1,18 @@
+BUGS
+
+ONE
+The dig system allows the player to dig through collision tiles, which is not
+Ideal in most cases
+
+
+ISSUES
+
+ONE
+The dig system doesnt allow for the placement of a dig spot directly underneath 
+the player
+
+
+TODO
+
+ONE
+Re-order ModifyTile method to make least important stuff last

@@ -5,122 +5,122 @@
 
 class Map
 {
-public:
-    Map(const std::string& name, int height, int width, char tile)
-        : mName(name), mHeight(height), mWidth(width), mTile(tile) {
-    }
-
-    void Initialize()
-    {
-        mMap.assign(mHeight, std::vector<Tile>(mWidth, { mTile, false, false, 0, false }));
-
-        int idCounter{ 100 };
-        for (size_t column = 0; column < mHeight; ++column)
-        {
-            for (size_t row = 0; row < mWidth; ++row)
-            {
-                mMap[column][row].tileID = ++idCounter;
-            }
+    public:
+        Map(const std::string& name, int height, int width, char tile)
+            : mName(name), mHeight(height), mWidth(width), mTile(tile) {
         }
-    }
 
-    void Draw()
-    {
-        for (size_t column = 0; column < mHeight; ++column)
+        void Initialize()
         {
-            for (size_t row = 0; row < mWidth; ++row)
+            mMap.assign(mHeight, std::vector<Tile>(mWidth, { mTile, false, false, 0, false }));
+
+            int idCounter{ 100 };
+            for (size_t column = 0; column < mHeight; ++column)
             {
-                if (mMap[column][row].doNotRedraw == true)
+                for (size_t row = 0; row < mWidth; ++row)
                 {
-                    mMap[column][row].tile = ' ';
+                    mMap[column][row].tileID = ++idCounter;
                 }
-
-                std::cout << mMap[column][row].tile << ' ';
             }
-            std::cout << '\n';
         }
-    }
 
-    void ModifyTile(int y, int x, char newTile = '\0', bool collisionState = false, bool interactionState = false, int interactCount = 0, bool isCollectible = false, bool doNotRedraw = false)
-    {
-        if (!IsInBounds(y, x))
+        void Draw()
         {
-            std::cout << "Coordinates are out of bounds!\n";
-            return;
+            for (size_t column = 0; column < mHeight; ++column)
+            {
+                for (size_t row = 0; row < mWidth; ++row)
+                {
+                    if (mMap[column][row].doNotRedraw == true)
+                    {
+                        mMap[column][row].tile = ' ';
+                    }
+
+                    std::cout << mMap[column][row].tile << ' ';
+                }
+                std::cout << '\n';
+            }
         }
 
-        if (newTile != '\0')
+        void ModifyTile(int y, int x, char newTile = '\0', bool collisionState = false, bool interactionState = false, int interactCount = 0, bool isCollectible = false, bool doNotRedraw = false)
+        {
+            if (!IsInBounds(y, x))
+            {
+                std::cout << "Coordinates are out of bounds!\n";
+                return;
+            }
+
+            if (newTile != '\0')
+            {
+                mMap[y][x].tile = newTile;
+            }
+
+            mMap[y][x].collisionState = collisionState;
+            mMap[y][x].interactionState = interactionState;
+            mMap[y][x].doNotRedraw = doNotRedraw;
+        }
+
+        bool GetInteractionState(int y, int x) const
+        {
+            return mMap[y][x].interactionState;
+        }
+
+        bool GetCollisionState(int y, int x) const
+        {
+            return mMap[y][x].collisionState;
+        }
+
+        int GetHeight() const { return mHeight; }
+        int GetWidth() const { return mWidth; }
+
+        int GetTileID(int y, int x) const
+        {
+            return mMap[y][x].tileID;
+        }
+
+        bool GetDoNotRedrawState(int y, int x) const
+        {
+            return mMap[y][x].doNotRedraw;
+        }
+
+        void SetNewTile(int y, int x, char newTile)
         {
             mMap[y][x].tile = newTile;
         }
 
-        mMap[y][x].collisionState = collisionState;
-        mMap[y][x].interactionState = interactionState;
-        mMap[y][x].doNotRedraw = doNotRedraw;
-    }
-
-    bool GetInteractionState(int y, int x) const
-    {
-        return mMap[y][x].interactionState;
-    }
-
-    bool GetCollisionState(int y, int x) const
-    {
-        return mMap[y][x].collisionState;
-    }
-
-    int GetHeight() const { return mHeight; }
-    int GetWidth() const { return mWidth; }
-
-    int GetTileID(int y, int x) const
-    {
-        return mMap[y][x].tileID;
-    }
-
-    bool GetDoNotRedrawState(int y, int x) const
-    {
-        return mMap[y][x].doNotRedraw;
-    }
-
-    void SetNewTile(int y, int x, char newTile)
-    {
-        mMap[y][x].tile = newTile;
-    }
-
-    char GetTile(int y, int x) const
-    {
-        if (IsInBounds(y, x))
+        char GetTile(int y, int x) const
         {
-            return mMap[y][x].tile;
+            if (IsInBounds(y, x))
+            {
+                return mMap[y][x].tile;
+            }
+            else
+            {
+                std::cout << "Out of bounds\n";
+            }
         }
-        else
+
+    private:
+        struct Tile
         {
-            std::cout << "Out of bounds\n";
+            char tile{};
+            bool collisionState{ false };
+            bool interactionState{ false };
+            int interactCount{ 0 };
+            bool isCollectible{ false };
+            int tileID{};
+            bool doNotRedraw{ false };
+        };
+
+        std::string mName{};
+        int mHeight{};
+        int mWidth{};
+        char mTile{};
+        std::vector<std::vector<Tile>> mMap;
+
+        bool IsInBounds(int y, int x) const
+        {
+            return y >= 0 && y < mHeight && x >= 0 && x < mWidth;
         }
-    }
-
-private:
-    struct Tile
-    {
-        char tile{};
-        bool collisionState{ false };
-        bool interactionState{ false };
-        int interactCount{ 0 };
-        bool isCollectible{ false };
-        int tileID{};
-        bool doNotRedraw{ false };
-    };
-
-    std::string mName{};
-    int mHeight{};
-    int mWidth{};
-    char mTile{};
-    std::vector<std::vector<Tile>> mMap;
-
-    bool IsInBounds(int y, int x) const
-    {
-        return y >= 0 && y < mHeight && x >= 0 && x < mWidth;
-    }
 };
 
 class Character
@@ -190,7 +190,6 @@ class Character
 
         void Dig(int y, int x, Map& map)
         {
-            //I set y to -1 to test if its actually modifying the tile, it can be set back when debugging is complete. 
             map.ModifyTile(y - 1, x, ' ', false, true, 0, false, true);
         }
 
@@ -199,7 +198,7 @@ class Character
         char mSprite{};
         int mPosY{};
         int mPosX{};
-        char mPreviousTile;
+        char mPreviousTile{};
 
         std::vector<std::string> mInventory;
 
@@ -211,10 +210,10 @@ class Character
 
 void TestMap(Map& map)
 {
-    map.ModifyTile(2, 0, '_', true, false, 0, false, true);
-    map.ModifyTile(2, 1, '_', true, false, 0, false, true);
-    map.ModifyTile(2, 2, '_', true, false, 0, false, true);
-    map.ModifyTile(2, 3, '#', true, false, 0, false, true);
+    map.ModifyTile(2, 0, '_', true);
+    map.ModifyTile(2, 1, '_', true);
+    map.ModifyTile(2, 2, '_', true);
+    map.ModifyTile(2, 3, '#', true);
     map.ModifyTile(2, 4, '_', true);
     map.ModifyTile(2, 5, '#', true);
     map.ModifyTile(2, 6, '_', true);
@@ -252,13 +251,10 @@ void Toggle(int y, int x, char onTile, char offTile, bool collisionOnState, bool
     }
 }
 
-//KEY
-//NPC = Type
-//_01 = after NPC this is the code for the character itself
-
 const enum class DialogueID
 {
     NPC_01_Dialogue_01,
+    NPC_01_Dialogue_02,
 };
 
 void Dialogue(const DialogueID& ID)
@@ -316,8 +312,6 @@ int main()
         //remote door.
         if (input == 'E' || input == 'e')
         {
-            player.Dig(player.GetY(), player.GetX(), myMap);
-
             if (player.GetY() == 3 && player.GetX() == 3)
             {
                 Toggle(2, 4, '=', ' ', true, false, myMap);
