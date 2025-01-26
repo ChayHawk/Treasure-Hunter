@@ -25,3 +25,9 @@ TODO
 
 ONE
 Re-order ModifyTile method to make least important stuff last
+
+
+IDEAS
+
+ONE 
+Implement an event system

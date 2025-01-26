@@ -3,19 +3,6 @@
 #include <vector>
 #include <algorithm>
 
-//BUGS/ISSUES
-//
-//ONE
-//The dig system allows the player to dig through collision tiles, which is not
-//Ideal in most cases
-
-//TWO
-//The dig system doesnt allow for the placement of a dig spot directly underneath 
-//the player
-
-//THREE
-//
-
 class Map
 {
     public:
@@ -27,6 +14,7 @@ class Map
         {
             mMap.assign(mHeight, std::vector<Tile>(mWidth, { mTile, false, false, 0, false }));
 
+            //Assign ID to tiles. Could maybe make this its own function.
             int idCounter{ 100 };
             for (size_t column = 0; column < mHeight; ++column)
             {
@@ -54,6 +42,7 @@ class Map
             }
         }
 
+        //Rearrange the initializer list to put more important things first.
         void ModifyTile(int y, int x, char newTile = '\0', bool collisionState = false, bool interactionState = false, int interactCount = 0, bool isCollectible = false, bool doNotRedraw = false)
         {
             if (!IsInBounds(y, x))
@@ -82,8 +71,15 @@ class Map
             return mMap[y][x].collisionState;
         }
 
-        int GetHeight() const { return mHeight; }
-        int GetWidth() const { return mWidth; }
+        int GetHeight() const 
+        { 
+            return mHeight; 
+        }
+
+        int GetWidth() const 
+        { 
+            return mWidth; 
+        }
 
         int GetTileID(int y, int x) const
         {
@@ -196,9 +192,10 @@ class Character
         int GetX() const { return mPosX; }
         char GetSprite() const { return mSprite; }
 
+        //Need to find a way to stop player from digging into collidable objects.
         void Dig(int y, int x, Map& map)
         {
-            map.ModifyTile(y - 1, x, ' ', false, true, 0, false, true);
+            map.ModifyTile(y - 1, x, ' ', false, true, 0, false, false);
         }
 
     private:
@@ -207,6 +204,7 @@ class Character
         int mPosY{};
         int mPosX{};
         char mPreviousTile{};
+        int mDigsLeft{};
 
         std::vector<std::string> mInventory;
 
@@ -258,10 +256,6 @@ void Toggle(int y, int x, char onTile, char offTile, bool collisionOnState, bool
         map.ModifyTile(y, x, onTile, collisionOnState, true);
     }
 }
-
-//KEY
-//NPC = Type
-//_01 = after NPC this is the code for the character itself
 
 const enum class DialogueID
 {
