@@ -12,7 +12,7 @@ class Map
 
         void Initialize()
         {
-            mMap.assign(mHeight, std::vector<Tile>(mWidth, { mTile, false, false, 0, false }));
+            mMap.assign(mHeight, std::vector<Tile>(mWidth, { mTile, mTile, false, false, 0, false }));
 
             //Assign ID to tiles. Could maybe make this its own function.
             int idCounter{ 100 };
@@ -21,7 +21,9 @@ class Map
                 for (size_t row = 0; row < mWidth; ++row)
                 {
                     mMap[column][row].tileID = ++idCounter; //Set tile ID
-                    mMap[column][row].state = mMap[column][row].tile; //Set tile state, this allows for the tile to be reset if modified
+                    //This works however if i add stuff to the map and the player walks over it, it will reset to
+                    //the default tile i set, not the one on the map itself.
+                    mMap[column][row].tileState = mMap[column][row].tile; //Set tile state, this allows for the tile to be reset if modified
                 }
             }
         }
@@ -36,6 +38,11 @@ class Map
                     {
                         mMap[column][row].tile = ' ';
                     }
+                    
+                    if (mMap[column][row].resetTileState == true)
+                    {
+                        mMap[column][row].tile = mMap[column][row].tileState;
+                    }
 
                     std::cout << mMap[column][row].tile << ' ';
                 }
@@ -43,11 +50,29 @@ class Map
             }
         }
 
+        //Adds current changes to the map to the default tiles
+        //A better way may be found later but this works for now
+        void RescanMap()
+        {
+            for (size_t column = 0; column < mHeight; ++column)
+            {
+                for (size_t row = 0; row < mWidth; ++row)
+                {
+                    if (!mMap[column][row].isPersistent)
+                    {
+                        mMap[column][row].tileState = mMap[column][row].tile;
+                    }
+                }
+            }
+        }
+
+
         //Rearrange the initializer list to put more important things first.
         void ModifyTile
         (
-            int y, int x, char newTile = '\0', bool collisionState = false, bool interactionState = false, 
-            int interactCount = 0, bool isCollectible = false, bool doNotRedraw = false
+            int y, int x, char newTile = '\0', bool collisionState = false, bool interactionState = false,
+            int interactCount = 0, bool isCollectible = false, bool doNotRedraw = false,
+            bool resetTileState = false, bool isPersistent = false // New parameter
         )
         {
             if (!IsInBounds(y, x))
@@ -64,7 +89,10 @@ class Map
             mMap[y][x].collisionState = collisionState;
             mMap[y][x].interactionState = interactionState;
             mMap[y][x].doNotRedraw = doNotRedraw;
+            mMap[y][x].resetTileState = resetTileState;
+            mMap[y][x].isPersistent = isPersistent; // Set persistence
         }
+
 
         bool GetInteractionState(int y, int x) const
         {
@@ -127,17 +155,29 @@ class Map
             }
         }
 
+       
+        void ResetTileState(int y, int x)
+        {
+            if (!mMap[y][x].isPersistent)
+            {
+                mMap[y][x].tile = mMap[y][x].tileState;
+            }
+        }
+
+
     private:
         struct Tile
         {
             char tile{};
+            char tileState{};
+            bool resetTileState{ false };
             bool collisionState{ false };
             bool interactionState{ false };
             int interactCount{ 0 };
             bool isCollectible{ false };
             int tileID{};
             bool doNotRedraw{ false };
-            char state{};
+            bool isPersistent{ false };
         };
 
         std::string mName{};
@@ -170,37 +210,36 @@ class Character
                 case 'w':
                     --nextY;
                     break;
+
                 case 'S':
                 case 's':
                     ++nextY;
                     break;
+
                 case 'A':
                 case 'a':
                     --nextX;
                     break;
+
                 case 'D':
                 case 'd':
                     ++nextX;
                     break;
+
                 default:
                     std::cout << "Invalid choice!\n";
                     return;
             }
 
+            int lastY{ mPosY };
+            int lastX{ mPosX };
+
             if (IsMoveValid(nextY, nextX, map))
             {
-                // Restore the previous tile at the current position
-                map.ModifyTile(mPosY, mPosX, mPreviousTile);
-
-                // Save the tile at the new position
-                mPreviousTile = map.GetTile(nextY, nextX);
-
-                // Move the player to the new position
                 mPosY = nextY;
                 mPosX = nextX;
 
-                // Set the player's sprite at the new position
-                map.ModifyTile(mPosY, mPosX, mSprite);
+                map.ResetTileState(lastY, lastX);
             }
             else
             {
@@ -215,7 +254,14 @@ class Character
         //Need to find a way to stop player from digging into collidable objects.
         void Dig(int y, int x, Map& map)
         {
-            map.ModifyTile(y - 1, x, ' ', false, true, 0, false, false);
+            if (map.GetCollisionState(y - 1, x))
+            {
+                std::cout << "You can't dig here! It's collidable.\n";
+                return;
+            }
+
+            map.ModifyTile(y - 1, x, ' ', false, false, 0, false, false, false, true); // Mark as persistent
+            std::cout << "You dug up the spot!\n";
         }
 
     private:
@@ -240,7 +286,7 @@ void TestMap(Map& map)
     map.ModifyTile(2, 1, '_', true);
     map.ModifyTile(2, 2, '_', true);
     map.ModifyTile(2, 3, '#', true);
-    map.ModifyTile(2, 4, ' ', true); //Door
+    map.ModifyTile(2, 4, ' ', true, false, 0, false, false, false, true); //Door
     map.ModifyTile(2, 5, '#', true);
     map.ModifyTile(2, 6, '_', true);
     map.ModifyTile(2, 7, '_', true);
@@ -252,7 +298,7 @@ void TestMap(Map& map)
     map.ModifyTile(0, 11, '|', true);
 
     map.ModifyTile(1, 5, '|', true);
-    map.ModifyTile(0, 5, 'I', true); //Door
+    map.ModifyTile(0, 5, 'I', true, false, 0, false, false, false, true); //Door
 
     map.ModifyTile(0, 2, '*', true); //NPC
 }
@@ -262,31 +308,16 @@ void TestMap(Map& map)
 //switches via the tile ID. There should be a function for each object that can take a y and x param, a tileID and
 //any other information. 
 
-
-//This was moved inside of the
-//void Toggle(int y, int x, char onTile, char offTile, bool collisionOnState, bool collisionOffState, Map& map)
-//{
-//    if (map.GetInteractionState(y, x))
-//    {
-//        // Currently "on", so toggle to "off"
-//        map.ModifyTile(y, x, offTile, collisionOffState, false);
-//    }
-//    else
-//    {
-//        // Currently "off", so toggle to "on"
-//        map.ModifyTile(y, x, onTile, collisionOnState, true);
-//    }
-//}
-
 const enum class DialogueID
 {
-    NPC_01_Dialogue_01,
+    NPC_01_Dialogue_01
 };
 
 void Dialogue(const DialogueID& ID)
 {
     switch (ID)
     {
+        //Should put the contents of this case in a function then call it here to lessen clutter
         case DialogueID::NPC_01_Dialogue_01:
         {
             std::cout << "Hey there guy, would you like to see what im selling?\n";
@@ -317,6 +348,7 @@ int main()
     Map myMap("Test Map", 20, 20, '.');
     myMap.Initialize();
     TestMap(myMap);
+    myMap.RescanMap();
 
     Character player("Hero", '*', 4, 4);
 
