@@ -50,8 +50,7 @@ class Map
             }
         }
 
-        //Adds current changes to the map to the default tiles
-        //A better way may be found later but this works for now
+        //This is needed to add modifications made to the base map
         void RescanMap()
         {
             for (size_t column = 0; column < mHeight; ++column)
@@ -71,8 +70,7 @@ class Map
         void ModifyTile
         (
             int y, int x, char newTile = '\0', bool collisionState = false, bool interactionState = false,
-            int interactCount = 0, bool isCollectible = false, bool doNotRedraw = false,
-            bool resetTileState = false, bool isPersistent = false // New parameter
+            bool doNotRedraw = false, bool resetTileState = false, bool isPersistent = false // New parameter
         )
         {
             if (!IsInBounds(y, x))
@@ -260,7 +258,7 @@ class Character
                 return;
             }
 
-            map.ModifyTile(y - 1, x, ' ', false, false, 0, false, false, false, true); // Mark as persistent
+            map.ModifyTile(y - 1, x, ' ', false, false, false, false, true); // Mark as persistent
             std::cout << "You dug up the spot!\n";
         }
 
@@ -286,7 +284,7 @@ void TestMap(Map& map)
     map.ModifyTile(2, 1, '_', true);
     map.ModifyTile(2, 2, '_', true);
     map.ModifyTile(2, 3, '#', true);
-    map.ModifyTile(2, 4, ' ', true, false, 0, false, false, false, true); //Door
+    map.ModifyTile(2, 4, ' ', true, false, false, false, true); //Door
     map.ModifyTile(2, 5, '#', true);
     map.ModifyTile(2, 6, '_', true);
     map.ModifyTile(2, 7, '_', true);
@@ -298,15 +296,10 @@ void TestMap(Map& map)
     map.ModifyTile(0, 11, '|', true);
 
     map.ModifyTile(1, 5, '|', true);
-    map.ModifyTile(0, 5, 'I', true, false, 0, false, false, false, true); //Door
+    map.ModifyTile(0, 5, 'I', true, false, false, false, true); //Door
 
     map.ModifyTile(0, 2, '*', true); //NPC
 }
-
-//Need to implement a system where individual objects can be made and placed on the map, and they will act independantly
-//of each other, so for example say i place 2 doors and 2 switches, the doors will be tied to their respective
-//switches via the tile ID. There should be a function for each object that can take a y and x param, a tileID and
-//any other information. 
 
 const enum class DialogueID
 {

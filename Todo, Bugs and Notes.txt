@@ -25,3 +25,6 @@ IDEAS
 
 ONE 
 Implement an event system
+
+TWO
+For a dialogue system i can use a map to store dialogue and use dialogue ID's to fetch them
