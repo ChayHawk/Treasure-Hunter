@@ -15,9 +15,6 @@ to get rid of the door and get it working correctly. This applies to both doors.
 TODO
 
 ONE
-Re-order ModifyTile method to make least important stuff last
-
-TWO
 Find a way to make an object appear on the map without having to move first.
 
 
@@ -28,3 +25,6 @@ Implement an event system
 
 TWO
 For a dialogue system i can use a map to store dialogue and use dialogue ID's to fetch them
+
+THREE
+Add a direction system so the player can turn, make the system show which direction the player is facing at all times
