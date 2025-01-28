@@ -21,9 +21,7 @@ class Map
                 for (size_t row = 0; row < mWidth; ++row)
                 {
                     mMap[column][row].tileID = ++idCounter; //Set tile ID
-                    //This works however if i add stuff to the map and the player walks over it, it will reset to
-                    //the default tile i set, not the one on the map itself.
-                    mMap[column][row].tileState = mMap[column][row].tile; //Set tile state, this allows for the tile to be reset if modified
+                    mMap[column][row].masterTile = mMap[column][row].baseTile; //Set tile state, this allows for the tile to be reset if modified
                 }
             }
         }
@@ -36,15 +34,15 @@ class Map
                 {
                     if (mMap[column][row].doNotRedraw == true)
                     {
-                        mMap[column][row].tile = ' ';
+                        mMap[column][row].baseTile = ' ';
                     }
                     
                     if (mMap[column][row].resetTileState == true)
                     {
-                        mMap[column][row].tile = mMap[column][row].tileState;
+                        mMap[column][row].baseTile = mMap[column][row].masterTile;
                     }
 
-                    std::cout << mMap[column][row].tile << ' ';
+                    std::cout << mMap[column][row].baseTile << ' ';
                 }
                 std::cout << '\n';
             }
@@ -59,7 +57,7 @@ class Map
                 {
                     if (!mMap[column][row].isPersistent)
                     {
-                        mMap[column][row].tileState = mMap[column][row].tile;
+                        mMap[column][row].masterTile = mMap[column][row].baseTile;
                     }
                 }
             }
@@ -81,7 +79,7 @@ class Map
 
             if (newTile != '\0')
             {
-                mMap[y][x].tile = newTile;
+                mMap[y][x].baseTile = newTile;
             }
 
             mMap[y][x].collisionState = collisionState;
@@ -124,14 +122,14 @@ class Map
 
         void SetNewTile(int y, int x, char newTile)
         {
-            mMap[y][x].tile = newTile;
+            mMap[y][x].baseTile = newTile;
         }
 
         char GetTile(int y, int x) const
         {
             if (IsInBounds(y, x))
             {
-                return mMap[y][x].tile;
+                return mMap[y][x].baseTile;
             }
             else
             {
@@ -158,7 +156,7 @@ class Map
         {
             if (!mMap[y][x].isPersistent)
             {
-                mMap[y][x].tile = mMap[y][x].tileState;
+                mMap[y][x].baseTile = mMap[y][x].masterTile;
             }
         }
 
@@ -166,8 +164,8 @@ class Map
     private:
         struct Tile
         {
-            char tile{};
-            char tileState{};
+            char baseTile{};
+            char masterTile{};
             bool resetTileState{ false };
             bool collisionState{ false };
             bool interactionState{ false };
