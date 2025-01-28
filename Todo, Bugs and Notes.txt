@@ -1,20 +1,11 @@
 BUGS
 
-ONE
-The dig system allows the player to dig through collision tiles, which is not
-Ideal in most cases
-
-TWO
-The current system of redrawing the map tiles when the player moves works, however
-When the player spawns, a player character is spawned on the map independant
-of the actual player character.
-
 
 ISSUES
 
 ONE
 The dig system doesnt allow for the placement of a dig spot directly underneath 
-the player
+the player.
 
 TWO
 The doors are already drawn on the map but I need to activate the trigger twice 
@@ -26,8 +17,14 @@ TODO
 ONE
 Re-order ModifyTile method to make least important stuff last
 
+TWO
+Find a way to make an object appear on the map without having to move first.
+
 
 IDEAS
 
 ONE 
 Implement an event system
+
+TWO
+For a dialogue system i can use a map to store dialogue and use dialogue ID's to fetch them
