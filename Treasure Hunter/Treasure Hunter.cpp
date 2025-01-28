@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include <string>
 #include <vector>
 #include <algorithm>
@@ -20,7 +20,8 @@ class Map
             {
                 for (size_t row = 0; row < mWidth; ++row)
                 {
-                    mMap[column][row].tileID = ++idCounter;
+                    mMap[column][row].tileID = ++idCounter; //Set tile ID
+                    mMap[column][row].state = mMap[column][row].tile; //Set tile state, this allows for the tile to be reset if modified
                 }
             }
         }
@@ -43,7 +44,11 @@ class Map
         }
 
         //Rearrange the initializer list to put more important things first.
-        void ModifyTile(int y, int x, char newTile = '\0', bool collisionState = false, bool interactionState = false, int interactCount = 0, bool isCollectible = false, bool doNotRedraw = false)
+        void ModifyTile
+        (
+            int y, int x, char newTile = '\0', bool collisionState = false, bool interactionState = false, 
+            int interactCount = 0, bool isCollectible = false, bool doNotRedraw = false
+        )
         {
             if (!IsInBounds(y, x))
             {
@@ -108,6 +113,20 @@ class Map
             }
         }
 
+        void Toggle(int y, int x, char onTile, char offTile, bool collisionOnState, bool collisionOffState)
+        {
+            if (GetInteractionState(y, x))
+            {
+                // Currently "on", so toggle to "off"
+                ModifyTile(y, x, offTile, collisionOffState, false);
+            }
+            else
+            {
+                // Currently "off", so toggle to "on"
+                ModifyTile(y, x, onTile, collisionOnState, true);
+            }
+        }
+
     private:
         struct Tile
         {
@@ -118,6 +137,7 @@ class Map
             bool isCollectible{ false };
             int tileID{};
             bool doNotRedraw{ false };
+            char state{};
         };
 
         std::string mName{};
@@ -220,7 +240,7 @@ void TestMap(Map& map)
     map.ModifyTile(2, 1, '_', true);
     map.ModifyTile(2, 2, '_', true);
     map.ModifyTile(2, 3, '#', true);
-    map.ModifyTile(2, 4, '_', true);
+    map.ModifyTile(2, 4, ' ', true); //Door
     map.ModifyTile(2, 5, '#', true);
     map.ModifyTile(2, 6, '_', true);
     map.ModifyTile(2, 7, '_', true);
@@ -232,30 +252,31 @@ void TestMap(Map& map)
     map.ModifyTile(0, 11, '|', true);
 
     map.ModifyTile(1, 5, '|', true);
-    map.ModifyTile(0, 5, 'I', true);
+    map.ModifyTile(0, 5, 'I', true); //Door
 
-    map.ModifyTile(0, 2, '*', true);
+    map.ModifyTile(0, 2, '*', true); //NPC
 }
-
 
 //Need to implement a system where individual objects can be made and placed on the map, and they will act independantly
 //of each other, so for example say i place 2 doors and 2 switches, the doors will be tied to their respective
 //switches via the tile ID. There should be a function for each object that can take a y and x param, a tileID and
 //any other information. 
 
-void Toggle(int y, int x, char onTile, char offTile, bool collisionOnState, bool collisionOffState, Map& map)
-{
-    if (map.GetInteractionState(y, x))
-    {
-        // Currently "on", so toggle to "off"
-        map.ModifyTile(y, x, offTile, collisionOffState, false);
-    }
-    else
-    {
-        // Currently "off", so toggle to "on"
-        map.ModifyTile(y, x, onTile, collisionOnState, true);
-    }
-}
+
+//This was moved inside of the
+//void Toggle(int y, int x, char onTile, char offTile, bool collisionOnState, bool collisionOffState, Map& map)
+//{
+//    if (map.GetInteractionState(y, x))
+//    {
+//        // Currently "on", so toggle to "off"
+//        map.ModifyTile(y, x, offTile, collisionOffState, false);
+//    }
+//    else
+//    {
+//        // Currently "off", so toggle to "on"
+//        map.ModifyTile(y, x, onTile, collisionOnState, true);
+//    }
+//}
 
 const enum class DialogueID
 {
@@ -320,11 +341,11 @@ int main()
         {
             if (player.GetY() == 3 && player.GetX() == 3)
             {
-                Toggle(2, 4, '=', ' ', true, false, myMap);
+                myMap.Toggle(2, 4, '=', ' ', true, false);
             }
             else if (player.GetY() == 0 && player.GetX() == 4 || player.GetY() == 0 && player.GetX() == 6)
             {
-                Toggle(0, 5, 'I', ' ', true, false, myMap);
+                myMap.Toggle(0, 5, 'I', ' ', true, false);
             }
             else if (player.GetY() == 1 && player.GetX() == 2)
             {

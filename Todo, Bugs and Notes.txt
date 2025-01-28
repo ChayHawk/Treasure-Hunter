@@ -7,14 +7,16 @@ Ideal in most cases
 TWO
 The current system of redrawing the map tiles when the player moves works, however
 When the player spawns, a player character is spawned on the map independant
-of the actual player character.
+of the actual player character. I believe this is cause because the current system
+draws the last tile the player was on, but if the player just spawned it will draw
+their sprite on the map. 
 
 
 ISSUES
 
 ONE
 The dig system doesnt allow for the placement of a dig spot directly underneath 
-the player
+the player.
 
 TWO
 The doors are already drawn on the map but I need to activate the trigger twice 
@@ -26,8 +28,15 @@ TODO
 ONE
 Re-order ModifyTile method to make least important stuff last
 
+TWO
+Find a way to make an object appear on the map without having to move first.
+
 
 IDEAS
 
 ONE 
 Implement an event system
+
+TWO
+Instead of getting tiles and storing them, i coult find a way to turn the tile "Off" 
+by setting a toggle for each tile by adding a boolean to the Tile struct in Map class.
