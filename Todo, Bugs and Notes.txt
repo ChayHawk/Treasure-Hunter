@@ -3,14 +3,6 @@ BUGS
 
 ISSUES
 
-ONE
-The dig system doesnt allow for the placement of a dig spot directly underneath 
-the player.
-
-TWO
-The doors are already drawn on the map but I need to activate the trigger twice 
-to get rid of the door and get it working correctly. This applies to both doors.
-
 
 TODO
 

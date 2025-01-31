@@ -63,12 +63,10 @@ class Map
             }
         }
 
-
-        //Rearrange the initializer list to put more important things first.
         void ModifyTile
         (
             int y, int x, char newTile = '\0', bool collisionState = false, bool interactionState = false,
-            bool doNotRedraw = false, bool resetTileState = false, bool isPersistent = false // New parameter
+            bool doNotRedraw = false, bool resetTileState = false, bool isPersistent = false
         )
         {
             if (!IsInBounds(y, x))
@@ -86,7 +84,7 @@ class Map
             mMap[y][x].interactionState = interactionState;
             mMap[y][x].doNotRedraw = doNotRedraw;
             mMap[y][x].resetTileState = resetTileState;
-            mMap[y][x].isPersistent = isPersistent; // Set persistence
+            mMap[y][x].isPersistent = isPersistent;
         }
 
 
@@ -192,13 +190,13 @@ class Character
 {
     public:
         Character(const std::string& name, char sprite, int y, int x)
-            : mName(name), mSprite(sprite), mPosY(y), mPosX(x)
+            : mName(name), mSprite(sprite), mPositionY(y), mPositionX(x)
         {}
                                                    
         void Move(char direction, Map& map)
         {
-            int nextY = mPosY;
-            int nextX = mPosX;
+            int nextY = mPositionY;
+            int nextX = mPositionX;
 
             switch (direction)
             {
@@ -227,13 +225,13 @@ class Character
                     return;
             }
 
-            int lastY{ mPosY };
-            int lastX{ mPosX };
+            int lastY{ mPositionY };
+            int lastX{ mPositionX };
 
             if (IsMoveValid(nextY, nextX, map))
             {
-                mPosY = nextY;
-                mPosX = nextX;
+                mPositionY = nextY;
+                mPositionX = nextX;
 
                 map.ResetTileState(lastY, lastX);
             }
@@ -243,8 +241,8 @@ class Character
             }
         }
 
-        int GetY() const { return mPosY; }
-        int GetX() const { return mPosX; }
+        int GetY() const { return mPositionY; }
+        int GetX() const { return mPositionX; }
         char GetSprite() const { return mSprite; }
 
         //Need to find a way to stop player from digging into collidable objects.
@@ -263,8 +261,8 @@ class Character
     private:
         std::string mName{};
         char mSprite{};
-        int mPosY{};
-        int mPosX{};
+        int mPositionY{};
+        int mPositionX{};
         char mPreviousTile{};
         int mDigsLeft{};
 
@@ -282,7 +280,7 @@ void TestMap(Map& map)
     map.ModifyTile(2, 1, '_', true);
     map.ModifyTile(2, 2, '_', true);
     map.ModifyTile(2, 3, '#', true);
-    map.ModifyTile(2, 4, ' ', true, false, false, false, true); //Door
+    map.ModifyTile(2, 4, '=', true, true, false, false, true); //Door
     map.ModifyTile(2, 5, '#', true);
     map.ModifyTile(2, 6, '_', true);
     map.ModifyTile(2, 7, '_', true);
@@ -294,7 +292,7 @@ void TestMap(Map& map)
     map.ModifyTile(0, 11, '|', true);
 
     map.ModifyTile(1, 5, '|', true);
-    map.ModifyTile(0, 5, 'I', true, false, false, false, true); //Door
+    map.ModifyTile(0, 5, 'I', true, true, false, false, true); //Door
 
     map.ModifyTile(0, 2, '*', true); //NPC
 }
