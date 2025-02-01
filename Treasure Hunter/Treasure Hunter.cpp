@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <cctype>
 
 class Map
 {
@@ -15,7 +16,8 @@ class Map
             mMap.assign(mHeight, std::vector<Tile>(mWidth, { mTile, mTile, false, false, 0, false }));
 
             //Assign ID to tiles. Could maybe make this its own function.
-            int idCounter{ 100 };
+            constexpr int startingTileID = 100;
+            int idCounter{ startingTileID };
             for (size_t column = 0; column < mHeight; ++column)
             {
                 for (size_t row = 0; row < mWidth; ++row)
@@ -47,6 +49,7 @@ class Map
                 std::cout << '\n';
             }
         }
+
 
         //This is needed to add modifications made to the base map
         void RescanMap()
@@ -255,6 +258,14 @@ class Character
 void TestMap(Map& map)
 {
     map.ModifyTile(2, 0, '_', true);
+
+    map.ModifyTile(0, 0, ' ', false, false, false, true);
+    map.ModifyTile(0, 1, ' ', false);
+    map.ModifyTile(0, 4, ' ', false);
+    map.ModifyTile(1, 0, ' ', false);
+    map.ModifyTile(1, 1, ' ', false);
+    map.ModifyTile(1, 2, ' ', false);
+
     map.ModifyTile(2, 1, '_', true);
     map.ModifyTile(2, 2, '_', true);
     map.ModifyTile(2, 3, '#', true);
@@ -330,13 +341,14 @@ int main()
         std::cout << "\n\n";
         char input;
         std::cin >> input;
+        input = std::tolower(input);
 
         //NOTE
         //Interactions are being hard coded for now, but later i need to find a way to package everything 
         //together so the game takes care of all that for me. For example, placing an entity and it easily
         //allowing me to attach another entity to it to trigger it, for example, a switch triggering a
         //remote door.
-        if (input == 'E' || input == 'e')
+        if (input == 'e')
         {
             if (player.GetY() == 3 && player.GetX() == 3)
             {
@@ -351,7 +363,7 @@ int main()
                 Dialogue(DialogueID::NPC_01_Dialogue_01);
             }
         }
-        else if (input == 'F' || input == 'f')
+        else if (input == 'f')
         {
             player.Dig(player.GetY(), player.GetX(), myMap);
         }
