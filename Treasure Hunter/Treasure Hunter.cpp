@@ -113,28 +113,6 @@ class Map
             return mMap[y][x].tileID;
         }
 
-        bool GetDoNotRedrawState(int y, int x) const
-        {
-            return mMap[y][x].doNotRedraw;
-        }
-
-        void SetNewTile(int y, int x, char newTile)
-        {
-            mMap[y][x].baseTile = newTile;
-        }
-
-        char GetTile(int y, int x) const
-        {
-            if (IsInBounds(y, x))
-            {
-                return mMap[y][x].baseTile;
-            }
-            else
-            {
-                std::cout << "Out of bounds\n";
-            }
-        }
-
         void Toggle(int y, int x, char onTile, char offTile, bool collisionOnState, bool collisionOffState)
         {
             if (GetInteractionState(y, x))
@@ -254,7 +232,7 @@ class Character
                 return;
             }
 
-            map.ModifyTile(y - 1, x, ' ', false, false, false, false, true); // Mark as persistent
+            map.ModifyTile(y - 1, x, ' ', false, false, true, false, true); // Mark as persistent
             std::cout << "You dug up the spot!\n";
         }
 
