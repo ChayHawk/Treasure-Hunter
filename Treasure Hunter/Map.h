@@ -17,14 +17,9 @@ class Map
 
         void Initialize();
         void Draw();
-        void RescanMap();
-        void EditTile
-        (
-            int y, int x, char newTile = NO_ENTITY, bool hasCollision = false, bool hasInteracted = false,
-            bool doNotRedraw = false, bool isPersistent = false
-        );
-        bool GetInteractionState(int y, int x) const;
-        bool GetCollisionState(int y, int x) const;
+        void EditTile(int y, int x, char newTile = NO_ENTITY, bool hasCollision = false, bool hasInteracted = false, bool doNotRedraw = false, bool isPersistent = false);
+        bool GetHasInteracted(int y, int x) const;
+        bool GetHasCollided(int y, int x) const;
         int GetHeight() const;
         int GetWidth() const;
         void Toggle(int y, int x, char onTile, char offTile, bool collisionOnState, bool collisionOffState);

@@ -69,7 +69,7 @@ char Character::GetSprite() const
 
 void Character::Dig(int y, int x, Map& map)
 {
-    if (map.GetCollisionState(y - 1, x))
+    if (map.GetHasCollided(y - 1, x))
     {
         std::cout << "You can't dig here! It's collidable.\n";
         return;
@@ -81,5 +81,5 @@ void Character::Dig(int y, int x, Map& map)
 
 bool Character::IsMoveValid(int y, int x, const Map& map) const
 {
-    return y >= 0 && y < map.GetHeight() && x >= 0 && x < map.GetWidth() && !map.GetCollisionState(y, x);
+    return y >= 0 && y < map.GetHeight() && x >= 0 && x < map.GetWidth() && !map.GetHasCollided(y, x);
 }

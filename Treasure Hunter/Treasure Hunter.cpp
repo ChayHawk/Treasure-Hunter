@@ -79,7 +79,6 @@ int main()
     Map myMap("Test Map", 20, 20, '.');
     myMap.Initialize();
     TestMap(myMap);
-    //myMap.RescanMap();
 
     Character player("Hero", '*', 4, 4);
 

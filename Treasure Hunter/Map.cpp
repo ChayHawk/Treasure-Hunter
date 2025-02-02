@@ -30,26 +30,7 @@ void Map::Draw()
     }
 }
 
-[[deprecated("Altered the way the game draws tiles, this is no longer needed")]]
-void Map::RescanMap()
-{
-    for (size_t column = 0; column < mHeight; ++column)
-    {
-        for (size_t row = 0; row < mWidth; ++row)
-        {
-            if (!mMap[column][row].GetIsPersistent())
-            {
-                mMap[column][row].SetBaseTile(mMap[column][row].GetBaseTile());
-            }
-        }
-    }
-}
-
-void Map::EditTile
-(
-    int y, int x, char newTile, bool hasCollision, bool hasInteracted,
-    bool doNotRedraw, bool isPersistent
-)
+void Map::EditTile(int y, int x, char newTile, bool hasCollision, bool hasInteracted, bool doNotRedraw, bool isPersistent)
 {
     if (!IsInBounds(y, x))
     {
@@ -68,14 +49,12 @@ void Map::EditTile
     mMap[y][x].SetIsPersistent(isPersistent);
 }
 
-//Rename to GetHasInteracted
-bool Map::GetInteractionState(int y, int x) const
+bool Map::GetHasInteracted(int y, int x) const
 {
     return mMap[y][x].HasInteracted();
 }
 
-//Rename to GetHasCollision
-bool Map::GetCollisionState(int y, int x) const
+bool Map::GetHasCollided(int y, int x) const
 {
     return mMap[y][x].HasCollision();
 }
@@ -92,7 +71,7 @@ int Map::GetWidth() const
 
 void Map::Toggle(int y, int x, char onTile, char offTile, bool collisionOnState, bool collisionOffState)
 {
-    if (GetInteractionState(y, x))
+    if (GetHasInteracted(y, x))
     {
         // Currently "on", so toggle to "off"
         EditTile(y, x, offTile, collisionOffState, false);
