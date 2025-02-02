@@ -73,14 +73,32 @@ char Character::GetSprite() const
 
 void Character::Dig(int y, int x, Map& map)
 {
-    if (map.GetHasCollided(y - 1, x))
+    if (map.GetHasCollided(y - 1, x) || map.GetHasCollided(y + 1, x) || map.GetHasCollided(y, x + 1) || map.GetHasCollided(y, x - 1))
     {
         std::cout << "You can't dig here! It's collidable.\n";
         return;
     }
 
-    map.EditTile(y - 1, x, ' ', false, false, true, true); // Mark as persistent
-    std::cout << "You dug up the spot!\n";
+    if (GetDirection() == "North")
+    {
+        map.EditTile(y - 1, x, ' ', false, false, true, true); // Mark as persistent
+    }
+    else if (GetDirection() == "East")
+    {
+        map.EditTile(y, x + 1, ' ', false, false, true, true); // Mark as persistent
+    }
+    else if (GetDirection() == "South")
+    {
+        map.EditTile(y + 1, x, ' ', false, false, true, true); // Mark as persistent
+    }
+    else if (GetDirection() == "West")
+    {
+        map.EditTile(y, x - 1, ' ', false, false, true, true); // Mark as persistent
+    }
+    else
+    {
+        std::print("You cant dig outside of the map dummy, you want the game to crash or somethin'?\n");
+    }
 }
 
 bool Character::IsMoveValid(int y, int x, const Map& map) const
