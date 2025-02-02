@@ -37,10 +37,14 @@ void Character::Move(char direction, Map& map)
 
     if (IsMoveValid(nextY, nextX, map))
     {
+        // Clear the player's symbol from the old position.
+        map.SetEntityAt(mPositionY, mPositionX, '\0');
+
         mPositionY = nextY;
         mPositionX = nextX;
 
-        map.ResetTileState(lastY, lastX);
+        // Place the player's sprite in the new position.
+        map.SetEntityAt(mPositionY, mPositionX, mSprite);
     }
     else
     {

@@ -2,17 +2,16 @@
 
 void Map::Initialize()
 {
-    mMap.assign(mHeight, std::vector<Tile>(mWidth, { mTile, mTile, false, false, 0, false }));
+    mMap.assign(mHeight, std::vector<Tile>(mWidth, Tile(mTile)));
 
-    //Assign ID to tiles. Could maybe make this its own function.
     constexpr int startingTileID = 100;
     int idCounter{ startingTileID };
     for (size_t column = 0; column < mHeight; ++column)
     {
         for (size_t row = 0; row < mWidth; ++row)
         {
-            mMap[column][row].tileID = ++idCounter; //Set tile ID
-            mMap[column][row].masterTile = mMap[column][row].baseTile; //Set tile state, this allows for the tile to be reset if modified
+            mMap[column][row].SetTileID(++idCounter); //Set tile ID
+            mMap[column][row].SetMasterTile(mMap[column][row].GetBaseTile()); //Set master tile, this allows for the tile to be reset if modified
         }
     }
 }
@@ -23,17 +22,25 @@ void Map::Draw()
     {
         for (size_t row = 0; row < mWidth; ++row)
         {
-            if (mMap[column][row].doNotRedraw == true)
+            if (mMap[column][row].GetDoNotRedraw() == true)
             {
-                mMap[column][row].baseTile = ' ';
+                mMap[column][row].SetBaseTile(' ');
             }
 
-            if (mMap[column][row].resetTileState == true)
+            if (mMap[column][row].GetResetTileState() == true)
             {
-                mMap[column][row].baseTile = mMap[column][row].masterTile;
+                mMap[column][row].SetBaseTile(mMap[column][row].GetMasterTile());
             }
 
-            std::cout << mMap[column][row].baseTile << ' ';
+            //If entity is present then print it, if not, print base tile
+            if (mMap[column][row].GetEntityTile() != '\0')
+            {
+                std::cout << mMap[column][row].GetEntityTile() << ' ';
+            }
+            else
+            {
+                std::cout << mMap[column][row].GetBaseTile() << ' ';
+            }
         }
         std::cout << '\n';
     }
@@ -45,9 +52,9 @@ void Map::RescanMap()
     {
         for (size_t row = 0; row < mWidth; ++row)
         {
-            if (!mMap[column][row].isPersistent)
+            if (!mMap[column][row].GetIsPersistent())
             {
-                mMap[column][row].masterTile = mMap[column][row].baseTile;
+                mMap[column][row].SetMasterTile(mMap[column][row].GetBaseTile());
             }
         }
     }
@@ -67,24 +74,24 @@ void Map::ModifyTile
 
     if (newTile != '\0')
     {
-        mMap[y][x].baseTile = newTile;
+        mMap[y][x].SetBaseTile(newTile);
     }
 
-    mMap[y][x].collisionState = collisionState;
-    mMap[y][x].interactionState = interactionState;
-    mMap[y][x].doNotRedraw = doNotRedraw;
-    mMap[y][x].resetTileState = resetTileState;
-    mMap[y][x].isPersistent = isPersistent;
+    mMap[y][x].SetCollisionState(collisionState);
+    mMap[y][x].SetInteractionState(interactionState);
+    mMap[y][x].SetDoNotRedraw(doNotRedraw);
+    mMap[y][x].SetResetTileState(resetTileState);
+    mMap[y][x].SetIsPersistent(isPersistent);
 }
 
 bool Map::GetInteractionState(int y, int x) const
 {
-    return mMap[y][x].interactionState;
+    return mMap[y][x].GetInteractionState();
 }
 
 bool Map::GetCollisionState(int y, int x) const
 {
-    return mMap[y][x].collisionState;
+    return mMap[y][x].GetCollisionState();
 }
 
 int Map::GetHeight() const
@@ -99,7 +106,7 @@ int Map::GetWidth() const
 
 int Map::GetTileID(int y, int x) const
 {
-    return mMap[y][x].tileID;
+    return mMap[y][x].GetTileID();
 }
 
 void Map::Toggle(int y, int x, char onTile, char offTile, bool collisionOnState, bool collisionOffState)
@@ -118,13 +125,33 @@ void Map::Toggle(int y, int x, char onTile, char offTile, bool collisionOnState,
 
 void Map::ResetTileState(int y, int x)
 {
-    if (!mMap[y][x].isPersistent)
+    if (!mMap[y][x].GetIsPersistent())
     {
-        mMap[y][x].baseTile = mMap[y][x].masterTile;
+        mMap[y][x].SetBaseTile(mMap[y][x].GetMasterTile());
     }
 }
 
 bool Map::IsInBounds(int y, int x) const
 {
     return y >= 0 && y < mHeight && x >= 0 && x < mWidth;
+}
+
+void Map::SetEntityAt(int y, int x, char entity)
+{
+    if (IsInBounds(y, x))
+    {
+        mMap[y][x].SetEntityTile(entity);
+    }
+}
+
+// In your Map.cpp, implement it like this:
+void Map::ModifyLayer(const std::function<void(Tile&)>& func)
+{
+    for (auto&row : mMap)
+    {
+        for (auto&tile : row)
+        {
+            func(tile);
+        }
+    }
 }

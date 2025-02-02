@@ -3,6 +3,7 @@
 #include <vector>
 #include <algorithm>
 #include <cctype>
+#include <print>
 
 #include "Map.h"
 #include "Character.h"
@@ -12,11 +13,11 @@ void TestMap(Map& map)
     map.ModifyTile(2, 0, '_', true);
 
     map.ModifyTile(0, 0, ' ', false, false, false, true);
-    map.ModifyTile(0, 1, ' ', false);
-    map.ModifyTile(0, 4, ' ', false);
-    map.ModifyTile(1, 0, ' ', false);
-    map.ModifyTile(1, 1, ' ', false);
-    map.ModifyTile(1, 2, ' ', false);
+    map.ModifyTile(0, 1, ' ', false, false, false, true);
+    map.ModifyTile(0, 4, ' ', false, false, false, true);
+    map.ModifyTile(1, 0, ' ', false, false, false, true);
+    map.ModifyTile(1, 1, ' ', false, false, false, true);
+    map.ModifyTile(1, 2, ' ', false, false, false, true);
 
     map.ModifyTile(2, 1, '_', true);
     map.ModifyTile(2, 2, '_', true);
@@ -86,7 +87,7 @@ int main()
 
     while (!isGameOver)
     {
-        myMap.ModifyTile(player.GetY(), player.GetX(), player.GetSprite());
+        myMap.SetEntityAt(player.GetY(), player.GetX(), player.GetSprite());
         myMap.Draw();
 
         std::cout << "\nMove (W/A/S/D) or Interact (E): ";
@@ -118,6 +119,14 @@ int main()
         else if (input == 'f')
         {
             player.Dig(player.GetY(), player.GetX(), myMap);
+        }
+        //Example
+        else if (input == 'r')
+        {
+            myMap.ModifyLayer([](Map::Tile& tile)
+                {
+                    tile.SetBaseTile('k');
+                });
         }
         else
         {
