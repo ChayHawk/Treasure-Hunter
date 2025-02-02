@@ -18,6 +18,9 @@ class Character
         int GetY() const;
         int GetX() const;
         char GetSprite() const;
+        int GetDigsLeft() const;
+        int GetScore() const;
+        std::string GetDirection() const;
 
         //Need to find a way to stop player from digging into collidable objects.
         void Dig(int y, int x, Map& map);
@@ -29,8 +32,11 @@ class Character
         int mPositionX{};
         char mPreviousTile{};
         int mDigsLeft{};
+        int mScore{};
+        char mDirection{};
 
         std::vector<std::string> mInventory;
 
         bool IsMoveValid(int y, int x, const Map& map) const;
+        void SetDirection(char direction);
 };

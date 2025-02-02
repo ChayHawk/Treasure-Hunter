@@ -5,8 +5,9 @@
 #include <vector>
 #include <functional>
 #include <cctype>
+#include <print>
 
-static constexpr char NO_ENTITY = NO_ENTITY;
+static constexpr char NO_ENTITY = '\0';
 
 class Map
 {
@@ -18,6 +19,7 @@ class Map
         void Initialize();
         void Draw();
         void EditTile(int y, int x, char newTile = NO_ENTITY, bool hasCollision = false, bool hasInteracted = false, bool doNotRedraw = false, bool isPersistent = false);
+        void EditTileRange(int y, int x, int rangeY, int rangeX, char newTile = NO_ENTITY, bool hasCollision = false, bool hasInteracted = false, bool doNotRedraw = false, bool isPersistent = false);
         bool GetHasInteracted(int y, int x) const;
         bool GetHasCollided(int y, int x) const;
         int GetHeight() const;

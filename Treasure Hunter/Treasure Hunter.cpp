@@ -10,45 +10,46 @@
 
 void TestMap(Map& map)
 {
-    map.EditTile(2, 0, '_', true);
+    map.EditTileRange(0, 0, 1, 4, ' ', false, false, false, false); //Clears the room of ground
+    map.EditTileRange(0, 6, 1, 4, ' ', false, false, false, false); //Clears the room of ground
 
-    map.EditTile(0, 0, ' ', false, false, false, true);
-    map.EditTile(0, 1, ' ', false, false, false, true);
-    map.EditTile(0, 4, ' ', false, false, false, true);
-    map.EditTile(1, 0, ' ', false, false, false, true);
-    map.EditTile(1, 1, ' ', false, false, false, true);
-    map.EditTile(1, 2, ' ', false, false, false, true);
-
-    map.EditTile(2, 1, '_', true, false, false, true);
-    map.EditTile(2, 2, '_', true);
+    map.EditTile(2, 0, '#', true);
+    map.EditTile(2, 1, '#', true, false, false, true);
+    map.EditTile(2, 2, '#', true);
     map.EditTile(2, 3, '#', true);
-    map.EditTile(2, 4, '=', true, true, false, true); //Door
+    map.EditTile(2, 4, '_', true, true, false, true); //Door
     map.EditTile(2, 5, '#', true);
-    map.EditTile(2, 6, '_', true);
-    map.EditTile(2, 7, '_', true);
-    map.EditTile(2, 8, '_', true);
-    map.EditTile(2, 9, '_', true);
-    map.EditTile(2, 10, '_', true);
-    map.EditTile(2, 11, '|', true);
-    map.EditTile(1, 11, '|', true);
-    map.EditTile(0, 11, '|', true);
+    map.EditTile(2, 6, '#', true);
+    map.EditTile(2, 7, '#', true);
+    map.EditTile(2, 8, '#', true);
+    map.EditTile(2, 9, '#', true);
+    map.EditTile(2, 10, '#', true);
+    map.EditTile(2, 11, '#', true);
+    map.EditTile(1, 11, '#', true);
+    map.EditTile(0, 11, '#', true);
 
-    map.EditTile(1, 5, '|', true);
-    map.EditTile(0, 5, 'I', true, true, false, true); //Door
 
+    map.EditTile(1, 5, '#', true);
+    map.EditTile(0, 5, '|', true, true, false, true); //Door
     map.EditTile(0, 2, '*', true); //NPC
 }
 
 const enum class DialogueID
 {
-    NPC_01_Dialogue_01
+    NPC_01_Dialogue_01,
+    NPC_01_Dialogue_02
 };
 
 void Dialogue(const DialogueID& ID)
 {
     switch (ID)
     {
-        //Should put the contents of this case in a function then call it here to lessen clutter
+        case DialogueID::NPC_01_Dialogue_02:
+        {
+            std::print("Hey there fella, my names prospector pete!, im the head honcho around here!");
+        }
+        break;
+
         case DialogueID::NPC_01_Dialogue_01:
         {
             std::cout << "Hey there guy, would you like to see what im selling?\n";
@@ -74,20 +75,47 @@ void Dialogue(const DialogueID& ID)
     }
 }
 
+void Intro()
+{
+    std::print("{:^39}\n", "TREASURE HUNTER");
+    std::print("{:^39}\n", "By");
+    std::print("{:^39}\n", "Chay Hawk");
+}
+
+void UI(int score, int money, int y, int x, const Character& character)
+{
+    std::print("{:=>39}\n", "");
+    std::print(" Score: [ {:<8} ]        Y: [ {:<4} ]\n", score, y);
+    std::print(" Money: [ {:<8} ]        X: [ {:<4} ]\n", money, x);
+    std::print(" Direction: [ {:^4} ]\n", character.GetDirection());
+    std::print("{:<4}\n", "");
+    std::print("{:=>39}\n", "");
+}
+
+
+
+
+
 int main()
 {
     Map myMap("Test Map", 20, 20, '.');
     myMap.Initialize();
     TestMap(myMap);
 
-    Character player("Hero", '*', 4, 4);
+    Character player("Hero", 'O', 4, 4);
 
     bool isGameOver = false;
+
+    Intro();
 
     while (!isGameOver)
     {
         myMap.SetEntityAt(player.GetY(), player.GetX(), player.GetSprite());
         myMap.Draw();
+
+        int money{ 100 }; //Temporary
+        std::print("{:^39}\n", "TREASURE HUNTER");
+        UI(player.GetScore(), money, player.GetY(), player.GetX(), player);
 
         std::cout << "\nMove (W/A/S/D) or Interact (E): ";
         std::cout << "\n\n";
@@ -102,13 +130,13 @@ int main()
         //remote door.
         if (input == 'e')
         {
-            if (player.GetY() == 3 && player.GetX() == 3)
+            if (player.GetY() == 3 && player.GetX() == 4 || player.GetY() == 1 && player.GetX() == 4)
             {
-                myMap.Toggle(2, 4, '=', ' ', true, false);
+                myMap.Toggle(2, 4, '_', ' ', true, false);
             }
             else if (player.GetY() == 0 && player.GetX() == 4 || player.GetY() == 0 && player.GetX() == 6)
             {
-                myMap.Toggle(0, 5, 'I', ' ', true, false);
+                myMap.Toggle(0, 5, '|', ' ', true, false);
             }
             else if (player.GetY() == 1 && player.GetX() == 2)
             {

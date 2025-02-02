@@ -9,21 +9,25 @@ void Character::Move(char direction, Map& map)
     {
         case 'W':
         case 'w':
+            SetDirection('N');
             --nextY;
             break;
 
         case 'S':
         case 's':
+            SetDirection('S');
             ++nextY;
             break;
 
         case 'A':
         case 'a':
+            SetDirection('W');
             --nextX;
             break;
 
         case 'D':
         case 'd':
+            SetDirection('E');
             ++nextX;
             break;
 
@@ -82,4 +86,47 @@ void Character::Dig(int y, int x, Map& map)
 bool Character::IsMoveValid(int y, int x, const Map& map) const
 {
     return y >= 0 && y < map.GetHeight() && x >= 0 && x < map.GetWidth() && !map.GetHasCollided(y, x);
+}
+
+int Character::GetDigsLeft() const
+{
+    return mDigsLeft;
+}
+
+int Character::GetScore() const
+{
+    return mScore;
+}
+
+std::string Character::GetDirection() const
+{
+    switch (mDirection)
+    {
+        case 'N':
+            return "North";
+            break;
+
+        case 'E':
+            return "East";
+            break;
+
+        case 'S':
+            return "South";
+            break;
+
+        case 'W':
+            return "West";
+            break;
+
+        default:
+            return "Error";
+    }
+}
+
+void Character::SetDirection(char direction)
+{
+    if (std::isprint(static_cast<unsigned char>(direction)))
+    {
+        mDirection = direction;
+    }
 }
