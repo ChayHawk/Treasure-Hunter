@@ -96,8 +96,8 @@ int main()
         std::print("{:^39}\n", "TREASURE HUNTER");
         UI(player.GetScore(), money, player.GetY(), player.GetX(), player);
 
-        std::cout << "\nMove (W/A/S/D) or Interact (E): ";
-        std::cout << "\n\n";
+        std::print("\nMove (W/A/S/D) or Interact (E): \n\n");
+
         char input;
         std::cin >> input;
         input = std::tolower(input);
@@ -124,7 +124,7 @@ int main()
         }
         else if (input == 'f')
         {
-            player.Dig(player.GetY(), player.GetX(), myMap);
+            player.Dig(myMap);
         }
         //Example
         else if (input == 'r')

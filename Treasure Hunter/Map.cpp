@@ -37,7 +37,7 @@ void Map::EditTile(int y, int x, char newTile, bool hasCollision, bool hasIntera
 {
     if (!IsInBounds(y, x))
     {
-        std::cout << "Coordinates are out of bounds!\n";
+        std::print("Coordinates are out of bounds!\n");
         return;
     }
 
@@ -57,7 +57,7 @@ void Map::EditTileRange(int y, int x, int rangeY, int rangeX, char newTile, bool
     // Ensure the entire range is within bounds
     if (!IsInBounds(y, x) || !IsInBounds(y + rangeY, x + rangeX))
     {
-        std::cout << "Coordinates are out of bounds!\n";
+        std::print("Coordinates are out of bounds!\n");
         return;
     }
 

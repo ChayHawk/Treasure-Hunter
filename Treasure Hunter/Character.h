@@ -23,7 +23,7 @@ class Character
         std::string GetDirection() const;
 
         //Need to find a way to stop player from digging into collidable objects.
-        void Dig(int y, int x, Map& map);
+        void Dig(Map& map);
 
     private:
         std::string mName{};

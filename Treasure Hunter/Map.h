@@ -27,6 +27,7 @@ class Map
         void Toggle(int y, int x, char onTile, char offTile, bool collisionOnState, bool collisionOffState);
         void ResetTileState(int y, int x);
         void SetEntityAt(int y, int x, char entity);
+        bool IsInBounds(int y, int x) const;
 
         class Tile 
         {
@@ -92,6 +93,4 @@ class Map
         int mWidth{};
         char mTile{};
         std::vector<std::vector<Tile>> mMap;
-
-        bool IsInBounds(int y, int x) const;
 };

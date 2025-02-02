@@ -7,37 +7,30 @@ void Character::Move(char direction, Map& map)
 
     switch (direction)
     {
-        case 'W':
         case 'w':
             SetDirection('N');
             --nextY;
             break;
 
-        case 'S':
         case 's':
             SetDirection('S');
             ++nextY;
             break;
 
-        case 'A':
         case 'a':
             SetDirection('W');
             --nextX;
             break;
 
-        case 'D':
         case 'd':
             SetDirection('E');
             ++nextX;
             break;
 
         default:
-            std::cout << "Invalid choice!\n";
+            std::print("Invalid choice!\n");
             return;
     }
-
-    int lastY{ mPositionY };
-    int lastX{ mPositionX };
 
     if (IsMoveValid(nextY, nextX, map))
     {
@@ -52,7 +45,7 @@ void Character::Move(char direction, Map& map)
     }
     else
     {
-        std::cout << "Movement blocked!\n";
+        std::print("Movement blocked!\n");
     }
 }
 
@@ -71,35 +64,41 @@ char Character::GetSprite() const
     return mSprite; 
 }
 
-void Character::Dig(int y, int x, Map& map)
+void Character::Dig(Map& map)
 {
-    if (map.GetHasCollided(y - 1, x) || map.GetHasCollided(y + 1, x) || map.GetHasCollided(y, x + 1) || map.GetHasCollided(y, x - 1))
+    // Determine target tile based on current position and direction.
+    int targetY = mPositionY;
+    int targetX = mPositionX;
+
+    switch (mDirection)
     {
-        std::cout << "You can't dig here! It's collidable.\n";
+        case 'N': targetY = mPositionY - 1; break;
+        case 'E': targetX = mPositionX + 1; break;
+        case 'S': targetY = mPositionY + 1; break;
+        case 'W': targetX = mPositionX - 1; break;
+        default:
+            std::print("Invalid direction for digging.\n");
+            return;
+    }
+
+    // Check if the target tile is in bounds.
+    if (!map.IsInBounds(targetY, targetX))
+    {
+        std::print("Cannot dig outside of the map.\n");
         return;
     }
 
-    if (GetDirection() == "North")
+    // Check if the target tile is collidable.
+    if (map.GetHasCollided(targetY, targetX))
     {
-        map.EditTile(y - 1, x, ' ', false, false, true, true); // Mark as persistent
+        std::print("You can't dig here! It's collidable.\n");
+        return;
     }
-    else if (GetDirection() == "East")
-    {
-        map.EditTile(y, x + 1, ' ', false, false, true, true); // Mark as persistent
-    }
-    else if (GetDirection() == "South")
-    {
-        map.EditTile(y + 1, x, ' ', false, false, true, true); // Mark as persistent
-    }
-    else if (GetDirection() == "West")
-    {
-        map.EditTile(y, x - 1, ' ', false, false, true, true); // Mark as persistent
-    }
-    else
-    {
-        std::print("You cant dig outside of the map dummy, you want the game to crash or somethin'?\n");
-    }
+
+    // Perform the dig (set the target tile to empty and mark it persistent).
+    map.EditTile(targetY, targetX, ' ', false, false, true, true);
 }
+
 
 bool Character::IsMoveValid(int y, int x, const Map& map) const
 {
@@ -120,26 +119,14 @@ std::string Character::GetDirection() const
 {
     switch (mDirection)
     {
-        case 'N':
-            return "North";
-            break;
-
-        case 'E':
-            return "East";
-            break;
-
-        case 'S':
-            return "South";
-            break;
-
-        case 'W':
-            return "West";
-            break;
-
-        default:
-            return "Error";
+        case 'N': return "North";
+        case 'E': return "East";
+        case 'S': return "South";
+        case 'W': return "West";
+        default:  return "Error";
     }
 }
+
 
 void Character::SetDirection(char direction)
 {
