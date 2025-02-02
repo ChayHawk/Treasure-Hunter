@@ -10,33 +10,33 @@
 
 void TestMap(Map& map)
 {
-    map.ModifyTile(2, 0, '_', true);
+    map.EditTile(2, 0, '_', true);
 
-    map.ModifyTile(0, 0, ' ', false, false, false, true);
-    map.ModifyTile(0, 1, ' ', false, false, false, true);
-    map.ModifyTile(0, 4, ' ', false, false, false, true);
-    map.ModifyTile(1, 0, ' ', false, false, false, true);
-    map.ModifyTile(1, 1, ' ', false, false, false, true);
-    map.ModifyTile(1, 2, ' ', false, false, false, true);
+    map.EditTile(0, 0, ' ', false, false, false, true);
+    map.EditTile(0, 1, ' ', false, false, false, true);
+    map.EditTile(0, 4, ' ', false, false, false, true);
+    map.EditTile(1, 0, ' ', false, false, false, true);
+    map.EditTile(1, 1, ' ', false, false, false, true);
+    map.EditTile(1, 2, ' ', false, false, false, true);
 
-    map.ModifyTile(2, 1, '_', true);
-    map.ModifyTile(2, 2, '_', true);
-    map.ModifyTile(2, 3, '#', true);
-    map.ModifyTile(2, 4, '=', true, true, false, false, true); //Door
-    map.ModifyTile(2, 5, '#', true);
-    map.ModifyTile(2, 6, '_', true);
-    map.ModifyTile(2, 7, '_', true);
-    map.ModifyTile(2, 8, '_', true);
-    map.ModifyTile(2, 9, '_', true);
-    map.ModifyTile(2, 10, '_', true);
-    map.ModifyTile(2, 11, '|', true);
-    map.ModifyTile(1, 11, '|', true);
-    map.ModifyTile(0, 11, '|', true);
+    map.EditTile(2, 1, '_', true, false, false, true);
+    map.EditTile(2, 2, '_', true);
+    map.EditTile(2, 3, '#', true);
+    map.EditTile(2, 4, '=', true, true, false, false, true); //Door
+    map.EditTile(2, 5, '#', true);
+    map.EditTile(2, 6, '_', true);
+    map.EditTile(2, 7, '_', true);
+    map.EditTile(2, 8, '_', true);
+    map.EditTile(2, 9, '_', true);
+    map.EditTile(2, 10, '_', true);
+    map.EditTile(2, 11, '|', true);
+    map.EditTile(1, 11, '|', true);
+    map.EditTile(0, 11, '|', true);
 
-    map.ModifyTile(1, 5, '|', true);
-    map.ModifyTile(0, 5, 'I', true, true, false, false, true); //Door
+    map.EditTile(1, 5, '|', true);
+    map.EditTile(0, 5, 'I', true, true, false, false, true); //Door
 
-    map.ModifyTile(0, 2, '*', true); //NPC
+    map.EditTile(0, 2, '*', true); //NPC
 }
 
 const enum class DialogueID
@@ -79,7 +79,7 @@ int main()
     Map myMap("Test Map", 20, 20, '.');
     myMap.Initialize();
     TestMap(myMap);
-    myMap.RescanMap();
+    //myMap.RescanMap();
 
     Character player("Hero", '*', 4, 4);
 
@@ -125,7 +125,7 @@ int main()
         {
             myMap.ModifyLayer([](Map::Tile& tile)
                 {
-                    tile.SetBaseTile('k');
+                    tile.SetBaseTile('.');
                 });
         }
         else

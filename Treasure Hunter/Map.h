@@ -8,7 +8,6 @@
 
 static constexpr char NO_ENTITY = '\0';
 
-
 class Map
 {
     public:
@@ -19,7 +18,7 @@ class Map
         void Initialize();
         void Draw();
         void RescanMap();
-        void ModifyTile
+        void EditTile
         (
             int y, int x, char newTile = NO_ENTITY, bool collisionState = false, bool interactionState = false,
             bool doNotRedraw = false, bool resetTileState = false, bool isPersistent = false
@@ -37,14 +36,14 @@ class Map
         {
             public:
                 Tile(char base)
-                    : baseTile(base), masterTile(base), entityTile(NO_ENTITY),
+                    : baseTile(base), objectTile(NO_ENTITY), entityTile(NO_ENTITY),
                     resetTileState(false), collisionState(false),
                     interactionState(false), interactCount(0), isCollectible(false),
                     tileID(0), doNotRedraw(false), isPersistent(false)
                 {}
 
+                char GetObjectTile() const { return objectTile; }
                 char GetBaseTile() const { return baseTile; }
-                char GetMasterTile() const { return masterTile; }
                 char GetEntityTile() const { return entityTile; }
                 bool GetResetTileState() const { return resetTileState; }
                 bool GetCollisionState() const { return collisionState; }
@@ -55,19 +54,19 @@ class Map
                 bool GetDoNotRedraw() const { return doNotRedraw; }
                 bool GetIsPersistent() const { return isPersistent; }
 
-                void SetBaseTile(char newBaseTile) 
+                void SetObjectTile(char newObjectTile) 
                 { 
-                    if(std::isprint(static_cast<unsigned char>(newBaseTile)))
+                    if(std::isprint(static_cast<unsigned char>(newObjectTile)))
                     {
-                        baseTile = newBaseTile;
+                        baseTile = newObjectTile;
                     }
                 }
 
-                void SetMasterTile(char newMasterTile) 
+                void SetBaseTile(char newBaseTile) 
                 { 
-                    if (std::isprint(static_cast<unsigned char>(newMasterTile)))
+                    if (std::isprint(static_cast<unsigned char>(newBaseTile)))
                     {
-                        masterTile = newMasterTile;
+                        baseTile = newBaseTile;
                     }
                 }
 
@@ -105,8 +104,8 @@ class Map
                 void SetIsPersistent(bool value) { isPersistent = value; }
 
             private:
+                char objectTile;
                 char baseTile;
-                char masterTile;
                 char entityTile;
                 bool resetTileState;
                 bool collisionState;
@@ -118,12 +117,9 @@ class Map
                 bool isPersistent;
         };
 
-
         void ModifyLayer(const std::function<void(Tile&)>& func);
 
     private:
-        
-
         std::string mName{};
         int mHeight{};
         int mWidth{};

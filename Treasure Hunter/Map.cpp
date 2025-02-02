@@ -11,7 +11,7 @@ void Map::Initialize()
         for (size_t row = 0; row < mWidth; ++row)
         {
             mMap[column][row].SetTileID(++idCounter); //Set tile ID
-            mMap[column][row].SetMasterTile(mMap[column][row].GetBaseTile()); //Set master tile, this allows for the tile to be reset if modified
+            mMap[column][row].SetBaseTile(mMap[column][row].GetBaseTile()); //Set master tile, this allows for the tile to be reset if modified
         }
     }
 }
@@ -29,7 +29,7 @@ void Map::Draw()
 
             if (mMap[column][row].GetResetTileState() == true)
             {
-                mMap[column][row].SetBaseTile(mMap[column][row].GetMasterTile());
+                mMap[column][row].SetBaseTile(mMap[column][row].GetBaseTile());
             }
 
             //If entity is present then print it, if not, print base tile
@@ -46,6 +46,7 @@ void Map::Draw()
     }
 }
 
+[[deprecated("Altered the way the game draws tiles, this is no longer needed")]]
 void Map::RescanMap()
 {
     for (size_t column = 0; column < mHeight; ++column)
@@ -54,16 +55,17 @@ void Map::RescanMap()
         {
             if (!mMap[column][row].GetIsPersistent())
             {
-                mMap[column][row].SetMasterTile(mMap[column][row].GetBaseTile());
+                mMap[column][row].SetBaseTile(mMap[column][row].GetBaseTile());
             }
         }
     }
 }
 
-void Map::ModifyTile
+void Map::EditTile
 (
     int y, int x, char newTile, bool collisionState, bool interactionState,
-    bool doNotRedraw, bool resetTileState, bool isPersistent
+    bool doNotRedraw, bool resetTileState, //True if tile should never be redrawn
+    bool isPersistent
 )
 {
     if (!IsInBounds(y, x))
@@ -74,7 +76,7 @@ void Map::ModifyTile
 
     if (newTile != '\0')
     {
-        mMap[y][x].SetBaseTile(newTile);
+        mMap[y][x].SetObjectTile(newTile);
     }
 
     mMap[y][x].SetCollisionState(collisionState);
@@ -114,12 +116,12 @@ void Map::Toggle(int y, int x, char onTile, char offTile, bool collisionOnState,
     if (GetInteractionState(y, x))
     {
         // Currently "on", so toggle to "off"
-        ModifyTile(y, x, offTile, collisionOffState, false);
+        EditTile(y, x, offTile, collisionOffState, false);
     }
     else
     {
         // Currently "off", so toggle to "on"
-        ModifyTile(y, x, onTile, collisionOnState, true);
+        EditTile(y, x, onTile, collisionOnState, true);
     }
 }
 
@@ -127,7 +129,7 @@ void Map::ResetTileState(int y, int x)
 {
     if (!mMap[y][x].GetIsPersistent())
     {
-        mMap[y][x].SetBaseTile(mMap[y][x].GetMasterTile());
+        mMap[y][x].SetBaseTile(mMap[y][x].GetBaseTile());
     }
 }
 
