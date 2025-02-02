@@ -17,7 +17,7 @@ void Map::Draw()
             }
 
             //If entity is present then print it, if not, print base tile
-            if (mMap[column][row].GetEntityTile() != '\0')
+            if (mMap[column][row].GetEntityTile() != NO_ENTITY)
             {
                 std::cout << mMap[column][row].GetEntityTile() << ' ';
             }
@@ -104,12 +104,11 @@ void Map::SetEntityAt(int y, int x, char entity)
     }
 }
 
-// In your Map.cpp, implement it like this:
 void Map::ModifyLayer(const std::function<void(Tile&)>& func)
 {
-    for (auto&row : mMap)
+    for (auto& row : mMap)
     {
-        for (auto&tile : row)
+        for (auto& tile : row)
         {
             func(tile);
         }

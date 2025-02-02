@@ -38,7 +38,7 @@ void Character::Move(char direction, Map& map)
     if (IsMoveValid(nextY, nextX, map))
     {
         // Clear the player's symbol from the old position.
-        map.SetEntityAt(mPositionY, mPositionX, '\0');
+        map.SetEntityAt(mPositionY, mPositionX, NO_ENTITY);
 
         mPositionY = nextY;
         mPositionX = nextX;

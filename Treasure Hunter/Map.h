@@ -6,7 +6,7 @@
 #include <functional>
 #include <cctype>
 
-static constexpr char NO_ENTITY = '\0';
+static constexpr char NO_ENTITY = NO_ENTITY;
 
 class Map
 {
