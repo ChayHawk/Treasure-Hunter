@@ -3,17 +3,6 @@
 void Map::Initialize()
 {
     mMap.assign(mHeight, std::vector<Tile>(mWidth, Tile(mTile)));
-
-    constexpr int startingTileID = 100;
-    int idCounter{ startingTileID };
-    for (size_t column = 0; column < mHeight; ++column)
-    {
-        for (size_t row = 0; row < mWidth; ++row)
-        {
-            mMap[column][row].SetTileID(++idCounter); //Set tile ID
-            mMap[column][row].SetBaseTile(mMap[column][row].GetBaseTile()); //Set master tile, this allows for the tile to be reset if modified
-        }
-    }
 }
 
 void Map::Draw()
@@ -99,11 +88,6 @@ int Map::GetHeight() const
 int Map::GetWidth() const
 {
     return mWidth;
-}
-
-int Map::GetTileID(int y, int x) const
-{
-    return mMap[y][x].GetTileID();
 }
 
 void Map::Toggle(int y, int x, char onTile, char offTile, bool collisionOnState, bool collisionOffState)

@@ -27,7 +27,6 @@ class Map
         bool GetCollisionState(int y, int x) const;
         int GetHeight() const;
         int GetWidth() const;
-        int GetTileID(int y, int x) const;
         void Toggle(int y, int x, char onTile, char offTile, bool collisionOnState, bool collisionOffState);
         void ResetTileState(int y, int x);
         void SetEntityAt(int y, int x, char entity);
@@ -37,18 +36,25 @@ class Map
             public:
                 Tile(char base)
                     : baseTile(base), objectTile(NO_ENTITY), entityTile(NO_ENTITY),
-                    hasCollision(false), hasInteracted(false), tileID(0), 
-                    doNotRedraw(false), isPersistent(false)
+                    hasCollision(false), hasInteracted(false), doNotRedraw(false), 
+                    isPersistent(false)
                 {}
 
-                char GetObjectTile() const { return objectTile; }
                 char GetBaseTile() const { return baseTile; }
+                char GetObjectTile() const { return objectTile; }                
                 char GetEntityTile() const { return entityTile; }
                 bool HasCollision() const { return hasCollision; }
                 bool HasInteracted() const { return hasInteracted; }
-                int GetTileID() const { return tileID; }
                 bool GetDoNotRedraw() const { return doNotRedraw; }
                 bool GetIsPersistent() const { return isPersistent; }
+
+                void SetBaseTile(char newBaseTile)
+                {
+                    if (std::isprint(static_cast<unsigned char>(newBaseTile)))
+                    {
+                        baseTile = newBaseTile;
+                    }
+                }
 
                 void SetObjectTile(char newObjectTile) 
                 { 
@@ -57,15 +63,7 @@ class Map
                         baseTile = newObjectTile;
                     }
                 }
-
-                void SetBaseTile(char newBaseTile) 
-                { 
-                    if (std::isprint(static_cast<unsigned char>(newBaseTile)))
-                    {
-                        baseTile = newBaseTile;
-                    }
-                }
-
+        
                 void SetEntityTile(char newEntityTile) 
                 { 
                     if (newEntityTile == NO_ENTITY || std::isprint(static_cast<unsigned char>(newEntityTile)))
@@ -76,15 +74,6 @@ class Map
 
                 void SetHasCollision(bool value) { hasCollision = value; }
                 void SetHasInteracted(bool value) { hasInteracted = value; }
-
-                void SetTileID(int id) 
-                { 
-                    if (id >= 0)
-                    {
-                        tileID = id;
-                    }
-                }
-
                 void SetDoNotRedraw(bool value) { doNotRedraw = value; }
                 void SetIsPersistent(bool value) { isPersistent = value; }
 
@@ -94,7 +83,6 @@ class Map
                 char entityTile;
                 bool hasCollision;
                 bool hasInteracted;
-                int tileID;
                 bool doNotRedraw;
                 bool isPersistent;
         };
