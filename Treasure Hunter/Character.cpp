@@ -75,7 +75,7 @@ void Character::Dig(int y, int x, Map& map)
         return;
     }
 
-    map.EditTile(y - 1, x, ' ', false, false, true, false, true); // Mark as persistent
+    map.EditTile(y - 1, x, ' ', false, false, true, true); // Mark as persistent
     std::cout << "You dug up the spot!\n";
 }
 

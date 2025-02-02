@@ -22,7 +22,7 @@ void TestMap(Map& map)
     map.EditTile(2, 1, '_', true, false, false, true);
     map.EditTile(2, 2, '_', true);
     map.EditTile(2, 3, '#', true);
-    map.EditTile(2, 4, '=', true, true, false, false, true); //Door
+    map.EditTile(2, 4, '=', true, true, false, true); //Door
     map.EditTile(2, 5, '#', true);
     map.EditTile(2, 6, '_', true);
     map.EditTile(2, 7, '_', true);
@@ -34,7 +34,7 @@ void TestMap(Map& map)
     map.EditTile(0, 11, '|', true);
 
     map.EditTile(1, 5, '|', true);
-    map.EditTile(0, 5, 'I', true, true, false, false, true); //Door
+    map.EditTile(0, 5, 'I', true, true, false, true); //Door
 
     map.EditTile(0, 2, '*', true); //NPC
 }

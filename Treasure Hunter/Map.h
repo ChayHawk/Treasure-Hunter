@@ -20,8 +20,8 @@ class Map
         void RescanMap();
         void EditTile
         (
-            int y, int x, char newTile = NO_ENTITY, bool collisionState = false, bool interactionState = false,
-            bool doNotRedraw = false, bool resetTileState = false, bool isPersistent = false
+            int y, int x, char newTile = NO_ENTITY, bool hasCollision = false, bool hasInteracted = false,
+            bool doNotRedraw = false, bool isPersistent = false
         );
         bool GetInteractionState(int y, int x) const;
         bool GetCollisionState(int y, int x) const;
@@ -37,19 +37,15 @@ class Map
             public:
                 Tile(char base)
                     : baseTile(base), objectTile(NO_ENTITY), entityTile(NO_ENTITY),
-                    resetTileState(false), collisionState(false),
-                    interactionState(false), interactCount(0), isCollectible(false),
-                    tileID(0), doNotRedraw(false), isPersistent(false)
+                    hasCollision(false), hasInteracted(false), tileID(0), 
+                    doNotRedraw(false), isPersistent(false)
                 {}
 
                 char GetObjectTile() const { return objectTile; }
                 char GetBaseTile() const { return baseTile; }
                 char GetEntityTile() const { return entityTile; }
-                bool GetResetTileState() const { return resetTileState; }
-                bool GetCollisionState() const { return collisionState; }
-                bool GetInteractionState() const { return interactionState; }
-                int GetInteractCount() const { return interactCount; }
-                bool GetIsCollectible() const { return isCollectible; }
+                bool HasCollision() const { return hasCollision; }
+                bool HasInteracted() const { return hasInteracted; }
                 int GetTileID() const { return tileID; }
                 bool GetDoNotRedraw() const { return doNotRedraw; }
                 bool GetIsPersistent() const { return isPersistent; }
@@ -78,19 +74,8 @@ class Map
                     }
                 }
 
-                void SetResetTileState(bool value) { resetTileState = value; }
-                void SetCollisionState(bool value) { collisionState = value; }
-                void SetInteractionState(bool value) { interactionState = value; }
-
-                void SetInteractCount(int count) 
-                { 
-                    if(count >= 0)
-                    {
-                        interactCount = count;
-                    }
-                }
-
-                void SetIsCollectible(bool value) { isCollectible = value; }
+                void SetHasCollision(bool value) { hasCollision = value; }
+                void SetHasInteracted(bool value) { hasInteracted = value; }
 
                 void SetTileID(int id) 
                 { 
@@ -107,11 +92,8 @@ class Map
                 char objectTile;
                 char baseTile;
                 char entityTile;
-                bool resetTileState;
-                bool collisionState;
-                bool interactionState;
-                int interactCount;
-                bool isCollectible;
+                bool hasCollision;
+                bool hasInteracted;
                 int tileID;
                 bool doNotRedraw;
                 bool isPersistent;

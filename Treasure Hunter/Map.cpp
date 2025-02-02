@@ -27,11 +27,6 @@ void Map::Draw()
                 mMap[column][row].SetBaseTile(' ');
             }
 
-            if (mMap[column][row].GetResetTileState() == true)
-            {
-                mMap[column][row].SetBaseTile(mMap[column][row].GetBaseTile());
-            }
-
             //If entity is present then print it, if not, print base tile
             if (mMap[column][row].GetEntityTile() != '\0')
             {
@@ -63,9 +58,8 @@ void Map::RescanMap()
 
 void Map::EditTile
 (
-    int y, int x, char newTile, bool collisionState, bool interactionState,
-    bool doNotRedraw, bool resetTileState, //True if tile should never be redrawn
-    bool isPersistent
+    int y, int x, char newTile, bool hasCollision, bool hasInteracted,
+    bool doNotRedraw, bool isPersistent
 )
 {
     if (!IsInBounds(y, x))
@@ -74,26 +68,27 @@ void Map::EditTile
         return;
     }
 
-    if (newTile != '\0')
+    if (newTile != NO_ENTITY)
     {
         mMap[y][x].SetObjectTile(newTile);
     }
 
-    mMap[y][x].SetCollisionState(collisionState);
-    mMap[y][x].SetInteractionState(interactionState);
+    mMap[y][x].SetHasCollision(hasCollision);
+    mMap[y][x].SetHasInteracted(hasInteracted);
     mMap[y][x].SetDoNotRedraw(doNotRedraw);
-    mMap[y][x].SetResetTileState(resetTileState);
     mMap[y][x].SetIsPersistent(isPersistent);
 }
 
+//Rename to GetHasInteracted
 bool Map::GetInteractionState(int y, int x) const
 {
-    return mMap[y][x].GetInteractionState();
+    return mMap[y][x].HasInteracted();
 }
 
+//Rename to GetHasCollision
 bool Map::GetCollisionState(int y, int x) const
 {
-    return mMap[y][x].GetCollisionState();
+    return mMap[y][x].HasCollision();
 }
 
 int Map::GetHeight() const
