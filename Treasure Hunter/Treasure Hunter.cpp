@@ -55,12 +55,6 @@ void Dialogue(const DialogueID& ID)
             std::print("Would you like to go on a treasure hunting adventure?!\n");
         }
         break;
-
-        case DialogueID::NPC_01_Dialogue_02:
-        {
-            
-        }
-        break;
     }
 }
 
