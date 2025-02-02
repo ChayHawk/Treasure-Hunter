@@ -3,22 +3,8 @@ BUGS
 
 ISSUES
 
-ONE
-The dig system doesnt allow for the placement of a dig spot directly underneath 
-the player.
-
-TWO
-The doors are already drawn on the map but I need to activate the trigger twice 
-to get rid of the door and get it working correctly. This applies to both doors.
-
 
 TODO
-
-ONE
-Re-order ModifyTile method to make least important stuff last
-
-TWO
-Find a way to make an object appear on the map without having to move first.
 
 
 IDEAS
@@ -28,3 +14,24 @@ Implement an event system
 
 TWO
 For a dialogue system i can use a map to store dialogue and use dialogue ID's to fetch them
+
+THREE
+Add a direction system so the player can turn, make the system show which direction the player is facing at all times
+
+
+
+NOTES
+
+Player Resetting Drawn Holes
+
+I initially had an issue where my player was drawing directly onto the map, which meant that when I dug a 
+hole (by changing a tile to a blank space), the player's sprite would overwrite that change when moving over it. 
+Essentially, every time I used ModifyTile to place the player's character, it was updating the underlying base tile. 
+That caused holes or any other persistent changes to be lost or shifted because the player's sprite replaced the 
+modified tile data. To fix this, I separated the drawing of dynamic entities (like the player) from the static 
+map data by introducing an extra layer—the entity layer. I added an entityTile member to my Tile class, which 
+I use exclusively for overlaying objects like the player. In my draw function, I now check if a tile has an entity; 
+if it does, I display that entity instead of the base tile. This way, the base tile remains unchanged, so any holes I 
+dig remain permanently blank, even when the player moves over them. This separation not only preserves the integrity 
+of my persistent map changes but also makes it easier to add more dynamic objects later without interfering with the 
+base map data.
