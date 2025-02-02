@@ -28,6 +28,11 @@ void TestMap(Map& map)
     map.EditTile(1, 11, '#', true);
     map.EditTile(0, 11, '#', true);
 
+    //Scenery
+    map.EditTile(7, 11, '@', true);
+    map.EditTile(8, 12, '@', true);
+    map.EditTile(8, 10, '@', true);
+
 
     map.EditTile(1, 5, '#', true);
     map.EditTile(0, 5, '|', true, true, false, true); //Door
@@ -44,32 +49,16 @@ void Dialogue(const DialogueID& ID)
 {
     switch (ID)
     {
-        case DialogueID::NPC_01_Dialogue_02:
+        case DialogueID::NPC_01_Dialogue_01:
         {
-            std::print("Hey there fella, my names prospector pete!, im the head honcho around here!");
+            std::print("Hey there fella, my names prospector pete!\n");
+            std::print("Would you like to go on a treasure hunting adventure?!\n");
         }
         break;
 
-        case DialogueID::NPC_01_Dialogue_01:
+        case DialogueID::NPC_01_Dialogue_02:
         {
-            std::cout << "Hey there guy, would you like to see what im selling?\n";
-
-            int choice{ 0 };
-
-            std::cout << "1.) Sure, why not?\n";
-            std::cout << "2.) I'll pass\n";
-
-            std::cin >> choice;
-
-            if (choice == 1)
-            {
-                std::cout << "Welcome to the shop, what would you like to buy?\n";
-            }
-            else if(choice == 2)
-            {
-                std::cout << "Come back if ya change yer mind.\n";
-                return;
-            }
+            
         }
         break;
     }
@@ -91,10 +80,6 @@ void UI(int score, int money, int y, int x, const Character& character)
     std::print("{:<4}\n", "");
     std::print("{:=>39}\n", "");
 }
-
-
-
-
 
 int main()
 {
