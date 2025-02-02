@@ -22,7 +22,7 @@ Add a direction system so the player can turn, make the system show which direct
 
 NOTES
 
-ONE
+Player Resetting Drawn Holes
 
 I initially had an issue where my player was drawing directly onto the map, which meant that when I dug a 
 hole (by changing a tile to a blank space), the player's sprite would overwrite that change when moving over it. 

@@ -6,6 +6,9 @@
 #include <functional>
 #include <cctype>
 
+static constexpr char NO_ENTITY = '\0';
+
+
 class Map
 {
     public:
@@ -18,7 +21,7 @@ class Map
         void RescanMap();
         void ModifyTile
         (
-            int y, int x, char newTile = '\0', bool collisionState = false, bool interactionState = false,
+            int y, int x, char newTile = NO_ENTITY, bool collisionState = false, bool interactionState = false,
             bool doNotRedraw = false, bool resetTileState = false, bool isPersistent = false
         );
         bool GetInteractionState(int y, int x) const;
@@ -34,7 +37,7 @@ class Map
         {
             public:
                 Tile(char base)
-                    : baseTile(base), masterTile(base), entityTile('\0'),
+                    : baseTile(base), masterTile(base), entityTile(NO_ENTITY),
                     resetTileState(false), collisionState(false),
                     interactionState(false), interactCount(0), isCollectible(false),
                     tileID(0), doNotRedraw(false), isPersistent(false)
@@ -70,7 +73,7 @@ class Map
 
                 void SetEntityTile(char newEntityTile) 
                 { 
-                    if (newEntityTile == '\0' || std::isprint(static_cast<unsigned char>(newEntityTile)))
+                    if (newEntityTile == NO_ENTITY || std::isprint(static_cast<unsigned char>(newEntityTile)))
                     {
                         entityTile = newEntityTile;
                     }
