@@ -1,9 +1,15 @@
 #include "Character.h"
 
-
-
-
-
+/**
+ * @brief Move character
+ * @version 1.0
+ * @author Chay Hawk
+ *
+ * Moves the player or any other character on the map
+ *
+ * @param direction 
+ * @param map
+ */
 void Character::Move(char direction, Map& map)
 {
     int nextY = mPositionY;
@@ -99,7 +105,7 @@ void Character::Dig(Map& map)
         }
 
         // Check if the target tile is collidable.
-        if (map.GetHasCollided(targetY, targetX))
+        if (map.GetHasCollision(targetY, targetX))
         {
             std::print("You can't dig here! It's collidable.\n");
             return;
@@ -119,7 +125,7 @@ void Character::Dig(Map& map)
 
 bool Character::IsMoveValid(int y, int x, const Map& map) const
 {
-    return y >= 0 && y < map.GetHeight() && x >= 0 && x < map.GetWidth() && !map.GetHasCollided(y, x);
+    return y >= 0 && y < map.GetHeight() && x >= 0 && x < map.GetWidth() && !map.GetHasCollision(y, x);
 }
 
 

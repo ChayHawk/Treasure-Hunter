@@ -10,8 +10,15 @@
 
 
 
-
-
+/**
+ * @brief Builds the first map.
+ * @version 1.0
+ * @author Chay Hawk
+ *
+ * Just a test map to test out important features.
+ *
+ * @param map
+ */
 void TestMap(Map& map)
 {
     map.EditTileRange(0, 0, 1, 4, ' ', false, false, false, false); //Clears the room of ground
@@ -43,14 +50,29 @@ void TestMap(Map& map)
     map.EditTile(0, 2, '*', true); //NPC
 }
 
-
+/**
+ * @brief Dialogue ID Tags
+ * @version 1.0
+ * @author Chay Hawk
+ *
+ * These are used to call specific dialogue options.
+ *
+ */
 const enum class DialogueID
 {
     NPC_01_Dialogue_01,
     NPC_01_Dialogue_02
 };
 
-
+/**
+ * @brief Show dialogue
+ * @version 1.0
+ * @author Chay Hawk
+ *
+ * This function outputs the dialogue based on the ID given to it.
+ *
+ * @param ID
+ */
 void Dialogue(const DialogueID& ID)
 {
     switch (ID)

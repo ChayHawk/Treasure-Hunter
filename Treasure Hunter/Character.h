@@ -6,6 +6,19 @@
 
 #include "Map.h"
 
+
+/**
+ * @class Character
+ * @brief Character Class
+ * @version 1.0
+ * @author Chay Hawk
+ *
+ * This represents a character in the game.
+ * 
+ * @todo Implement an interaction system where you can interact with objects
+ * and entities within a certain radius
+ * @todo Implement Inventory system for treasure
+ */
 class Character
 {
     public:
@@ -21,8 +34,6 @@ class Character
         int GetDigsLeft() const;
         int GetScore() const;
         std::string GetDirection() const;
-
-        //Need to find a way to stop player from digging into collidable objects.
         void Dig(Map& map);
 
     private:

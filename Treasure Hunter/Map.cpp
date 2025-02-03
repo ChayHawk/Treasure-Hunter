@@ -1,13 +1,27 @@
 #include "Map.h"
 
-
+/**
+ * @brief Initialize the map
+ * @version 1.0
+ * @author Chay Hawk
+ *
+ * This function initializes the map
+ *
+ */
 void Map::Initialize()
 {
     mMap.assign(mHeight, std::vector<Tile>(mWidth, Tile(mTile)));
 }
 
 
-//Try to get std::print working with this
+/**
+ * @brief Draw the map
+ * @version 1.0
+ * @author Chay Hawk
+ *
+ * This function draws the map and characters to the screen
+ *
+ */
 void Map::Draw()
 {
     for (size_t column = 0; column < mHeight; ++column)
@@ -36,6 +50,21 @@ void Map::Draw()
 }
 
 
+/**
+ * @brief Modify a tile on the map
+ * @version 1.0
+ * @author Chay Hawk
+ * 
+ * This function allows you to modify a tile anywhere on the map
+ *
+ * @param y The players y coordinates
+ * @param x The players x coordinates
+ * @param newTile The tile to place down
+ * @param hasCollision If the new tile has collision
+ * @param hasInteracted If this tile should now be marked as interacted with
+ * @param doNotRedraw If this tile should redraw itself or not
+ * @param isPersistent Marks the tile as persistent which prevents it from being drawn over.
+ */
 void Map::EditTile(int y, int x, char newTile, bool hasCollision, bool hasInteracted, bool doNotRedraw, bool isPersistent)
 {
     if (!IsInBounds(y, x))
@@ -56,6 +85,21 @@ void Map::EditTile(int y, int x, char newTile, bool hasCollision, bool hasIntera
 }
 
 
+/**
+ * @brief Modify a range of tiles on the map
+ * @version 1.0
+ * @author Chay Hawk
+ *
+ * This function allows you to modify tiles in a given range
+ *
+ * @param y The players y coordinates
+ * @param x The players x coordinates
+ * @param newTile The tile to place down
+ * @param hasCollision If the new tile has collision
+ * @param hasInteracted If this tile should now be marked as interacted with
+ * @param doNotRedraw If this tile should redraw itself or not
+ * @param isPersistent Marks the tile as persistent which prevents it from being drawn over.
+ */
 void Map::EditTileRange(int y, int x, int rangeY, int rangeX, char newTile, bool hasCollision, bool hasInteracted, bool doNotRedraw, bool isPersistent)
 {
     // Ensure the entire range is within bounds
@@ -87,30 +131,85 @@ void Map::EditTileRange(int y, int x, int rangeY, int rangeX, char newTile, bool
 }
 
 
+/**
+ * @brief Check interaction state
+ * @version 1.0
+ * @author Chay Hawk
+ *
+ * Gets the interaction state of the tile
+ *
+ * @param y The players y coordinates
+ * @param x The players x coordinates
+ * @return Returns true if the tile has been interacted with, false otherwise
+ */
 bool Map::GetHasInteracted(int y, int x) const
 {
     return mMap[y][x].HasInteracted();
 }
 
 
-bool Map::GetHasCollided(int y, int x) const
+/**
+ * @brief Check collision
+ * @version 1.0
+ * @author Chay Hawk
+ *
+ * Check if the tile has collision or not
+ *
+ * @param y The players y coordinates
+ * @param x The players x coordinates
+ * @return Returns true if the tile has collision, false if it does not
+ */
+bool Map::GetHasCollision(int y, int x) const
 {
     return mMap[y][x].HasCollision();
 }
 
 
+/**
+ * @brief Get map height
+ * @version 1.0
+ * @author Chay Hawk
+ *
+ * Get the height of the map
+ *
+ * @return Returns the height of the map
+ */
 int Map::GetHeight() const
 {
     return mHeight;
 }
 
 
+/**
+ * @brief Get map width
+ * @version 1.0
+ * @author Chay Hawk
+ *
+ * Get the width of the map
+ *
+ * @return Returns the width of the map
+ */
 int Map::GetWidth() const
 {
     return mWidth;
 }
 
-
+/**
+ * @brief Toggle switch
+ * @version 1.0
+ * @author Chay Hawk
+ *
+ * This function acts as a toggle for things like doors
+ * 
+ * @todo Look into refactoring boolean names to something clearer
+ *
+ * @param y The players y coordinates
+ * @param x The players x coordinates
+ * @param onTile The tile that displays when the toggle is "on"
+ * @param offTile The tile that displays when the tile is "off"
+ * @param collisionOnState Should collision be on or off for the "on" tile
+ * @param collisionOffState Should collision be on or off for the "off" tile
+ */
 void Map::Toggle(int y, int x, char onTile, char offTile, bool collisionOnState, bool collisionOffState)
 {
     if (GetHasInteracted(y, x))
@@ -126,6 +225,16 @@ void Map::Toggle(int y, int x, char onTile, char offTile, bool collisionOnState,
 }
 
 
+/**
+ * @brief 
+ * @version 1.0
+ * @author Chay Hawk
+ *
+ *@warning Function does not appear to be used 
+ *
+ * @param y The players y coordinates
+ * @param x The players x coordinates
+ */
 void Map::ResetTileState(int y, int x)
 {
     if (!mMap[y][x].GetIsPersistent())
@@ -135,12 +244,34 @@ void Map::ResetTileState(int y, int x)
 }
 
 
+/**
+ * @brief Check if within map bounds
+ * @version 1.0
+ * @author Chay Hawk
+ *
+ * Checks to see if the coordinates given to it are within the boundaries of the current map
+ *
+ * @param y The players y coordinates
+ * @param x The players x coordinates
+ */
 bool Map::IsInBounds(int y, int x) const
 {
     return y >= 0 && y < mHeight && x >= 0 && x < mWidth;
 }
 
 
+/**
+ * @brief Set entity on map
+ * @version 1.0
+ * @author Chay Hawk
+ *
+ * This function sets an entity, usually an NPC or some other entity that has movement on the map.
+ * 
+ *
+ * @param y The players y coordinates
+ * @param x The players x coordinates
+ * @param entity The entity to set
+ */
 void Map::SetEntityAt(int y, int x, char entity)
 {
     if (IsInBounds(y, x))
@@ -150,6 +281,15 @@ void Map::SetEntityAt(int y, int x, char entity)
 }
 
 
+/**
+ * @brief Modifies a layer of the map
+ * @version 1.0
+ * @author Chay Hawk
+ *
+ * This function modifies entire layers of the map
+ *
+ * @param func Takes a lambda
+ */
 void Map::ModifyLayer(const std::function<void(Tile&)>& func)
 {
     for (auto& row : mMap)
