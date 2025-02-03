@@ -109,11 +109,11 @@ void UI(int score, int money, int y, int x, const Character& character)
 
 int main()
 {
-    Map myMap("Test Map", 20, 20, '.');
-    myMap.Initialize();
-    TestMap(myMap);
+    Map theGoldenHills("Test Map", 20, 20, '.');
+    theGoldenHills.Initialize();
+    TestMap(theGoldenHills);
 
-    Character player("Hero", 'O', 4, 4);
+    Character player("Player", 'O', 4, 4);
 
     Intro();
 
@@ -121,8 +121,8 @@ int main()
 
     while (!isGameOver)
     {
-        myMap.SetEntityAt(player.GetY(), player.GetX(), player.GetSprite());
-        myMap.Draw();
+        theGoldenHills.SetEntityAt(player.GetY(), player.GetX(), player.GetSprite());
+        theGoldenHills.Draw();
 
         int money{ 100 }; //Temporary
         std::print("{:^39}\n", "TREASURE HUNTER - 0.1.0");
@@ -143,11 +143,11 @@ int main()
         {
             if (player.GetY() == 3 && player.GetX() == 4 || player.GetY() == 1 && player.GetX() == 4)
             {
-                myMap.Toggle(2, 4, '_', ' ', true, false);
+                theGoldenHills.Toggle(2, 4, '_', ' ', true, false);
             }
             else if (player.GetY() == 0 && player.GetX() == 4 || player.GetY() == 0 && player.GetX() == 6)
             {
-                myMap.Toggle(0, 5, '|', ' ', true, false);
+                theGoldenHills.Toggle(0, 5, '|', ' ', true, false);
             }
             else if (player.GetY() == 1 && player.GetX() == 2)
             {
@@ -156,19 +156,19 @@ int main()
         }
         else if (input == 'f')
         {
-            player.Dig(myMap);
+            player.Dig(theGoldenHills);
         }
         //Example
         else if (input == 'r')
         {
-            myMap.ModifyLayer([](Map::Tile& tile)
+            theGoldenHills.ModifyLayer([](Map::Tile& tile)
                 {
                     tile.SetBaseTile('.');
                 });
         }
         else
         {
-            player.Move(input, myMap);
+            player.Move(input, theGoldenHills);
         }
     }
 
