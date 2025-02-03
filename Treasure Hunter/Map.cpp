@@ -1,5 +1,9 @@
 #include "Map.h"
 
+// ============================================================================
+//                              MAP CLASS IMPLEMENTATION
+// ============================================================================
+
 /**
  * @brief Initialize the map
  * @version 1.0
@@ -302,6 +306,19 @@ void Map::ModifyLayer(const std::function<void(Tile&)>& func)
 }
 
 
+// ============================================================================
+//                              TILE SUBCLASS IMPLEMENTATION
+// ============================================================================
+
+void Map::Tile::SetBaseTile(char tile)
+{
+    baseTile = tile;
+}
+
+char Map::Tile::GetBaseTile() const
+{
+    return baseTile;
+}
 
 
 char Map::Tile::GetBaseTile() const 
