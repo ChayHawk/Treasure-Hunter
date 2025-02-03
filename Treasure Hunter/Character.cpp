@@ -1,5 +1,9 @@
 #include "Character.h"
 
+
+
+
+
 void Character::Move(char direction, Map& map)
 {
     int nextY = mPositionY;
@@ -28,7 +32,7 @@ void Character::Move(char direction, Map& map)
             break;
 
         default:
-            std::print("Invalid choice!\n");
+            std::print("Movement blocked at ({}, {})!\n", nextY, nextX);
             return;
     }
 
@@ -45,24 +49,28 @@ void Character::Move(char direction, Map& map)
     }
     else
     {
-        std::print("Movement blocked!\n");
+        std::print("Movement blocked at ({}, {})!\n", nextY, nextX);
     }
 }
+
 
 int Character::GetY() const
 { 
     return mPositionY; 
 }
 
+
 int Character::GetX() const
 { 
     return mPositionX; 
 }
 
+
 char Character::GetSprite() const
 { 
     return mSprite; 
 }
+
 
 void Character::Dig(Map& map)
 {
@@ -81,22 +89,31 @@ void Character::Dig(Map& map)
             return;
     }
 
-    // Check if the target tile is in bounds.
-    if (!map.IsInBounds(targetY, targetX))
+    if (mDigsLeft > 0)
     {
-        std::print("Cannot dig outside of the map.\n");
-        return;
+        // Check if the target tile is in bounds.
+        if (!map.IsInBounds(targetY, targetX))
+        {
+            std::print("Cannot dig outside of the map.\n");
+            return;
+        }
+
+        // Check if the target tile is collidable.
+        if (map.GetHasCollided(targetY, targetX))
+        {
+            std::print("You can't dig here! It's collidable.\n");
+            return;
+        }
+
+        // Perform the dig (set the target tile to empty and mark it persistent).
+        map.EditTile(targetY, targetX, ' ', false, false, true, true);
+    }
+    else
+    {
+        std::print("");
     }
 
-    // Check if the target tile is collidable.
-    if (map.GetHasCollided(targetY, targetX))
-    {
-        std::print("You can't dig here! It's collidable.\n");
-        return;
-    }
-
-    // Perform the dig (set the target tile to empty and mark it persistent).
-    map.EditTile(targetY, targetX, ' ', false, false, true, true);
+    
 }
 
 
@@ -105,15 +122,18 @@ bool Character::IsMoveValid(int y, int x, const Map& map) const
     return y >= 0 && y < map.GetHeight() && x >= 0 && x < map.GetWidth() && !map.GetHasCollided(y, x);
 }
 
+
 int Character::GetDigsLeft() const
 {
     return mDigsLeft;
 }
 
+
 int Character::GetScore() const
 {
     return mScore;
 }
+
 
 std::string Character::GetDirection() const
 {
@@ -130,8 +150,18 @@ std::string Character::GetDirection() const
 
 void Character::SetDirection(char direction)
 {
-    if (std::isprint(static_cast<unsigned char>(direction)))
+    // Only allow valid directions: N, S, E, or W.
+    switch (direction)
     {
-        mDirection = direction;
+        case 'N':
+        case 'S':
+        case 'E':
+        case 'W':
+            mDirection = direction;
+            break;
+        default:
+            std::print("Invalid direction provided: {}\n", direction);
+            // Optionally, you might set a default value or leave mDirection unchanged.
+            break;
     }
 }

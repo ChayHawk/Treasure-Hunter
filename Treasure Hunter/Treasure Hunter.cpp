@@ -8,6 +8,10 @@
 #include "Map.h"
 #include "Character.h"
 
+
+
+
+
 void TestMap(Map& map)
 {
     map.EditTileRange(0, 0, 1, 4, ' ', false, false, false, false); //Clears the room of ground
@@ -39,11 +43,13 @@ void TestMap(Map& map)
     map.EditTile(0, 2, '*', true); //NPC
 }
 
+
 const enum class DialogueID
 {
     NPC_01_Dialogue_01,
     NPC_01_Dialogue_02
 };
+
 
 void Dialogue(const DialogueID& ID)
 {
@@ -58,6 +64,7 @@ void Dialogue(const DialogueID& ID)
     }
 }
 
+
 void Intro()
 {
     std::print("{:^39}\n", "TREASURE HUNTER");
@@ -65,15 +72,18 @@ void Intro()
     std::print("{:^39}\n", "Chay Hawk");
 }
 
+
 void UI(int score, int money, int y, int x, const Character& character)
 {
     std::print("{:=>39}\n", "");
-    std::print(" Score: [ {:<8} ]        Y: [ {:<4} ]\n", score, y);
-    std::print(" Money: [ {:<8} ]        X: [ {:<4} ]\n", money, x);
+    std::print(" Score: [ {:^8} ]        Y: [ {:^4} ]\n", score, y);
+    std::print(" Money: [ {:^8} ]        X: [ {:^4} ]\n", money, x);
     std::print(" Direction: [ {:^4} ]\n", character.GetDirection());
+    std::print(" Digs Left: [ {:^4}]\n", character.GetDigsLeft());
     std::print("{:<4}\n", "");
     std::print("{:=>39}\n", "");
 }
+
 
 int main()
 {
@@ -83,9 +93,9 @@ int main()
 
     Character player("Hero", 'O', 4, 4);
 
-    bool isGameOver = false;
-
     Intro();
+
+    bool isGameOver = false;
 
     while (!isGameOver)
     {

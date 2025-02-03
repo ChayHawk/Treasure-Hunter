@@ -1,9 +1,14 @@
 #include "Map.h"
 
+
+
+
+
 void Map::Initialize()
 {
     mMap.assign(mHeight, std::vector<Tile>(mWidth, Tile(mTile)));
 }
+
 
 //Try to get std::print working with this
 void Map::Draw()
@@ -33,6 +38,7 @@ void Map::Draw()
     }
 }
 
+
 void Map::EditTile(int y, int x, char newTile, bool hasCollision, bool hasInteracted, bool doNotRedraw, bool isPersistent)
 {
     if (!IsInBounds(y, x))
@@ -51,6 +57,7 @@ void Map::EditTile(int y, int x, char newTile, bool hasCollision, bool hasIntera
     mMap[y][x].SetDoNotRedraw(doNotRedraw);
     mMap[y][x].SetIsPersistent(isPersistent);
 }
+
 
 void Map::EditTileRange(int y, int x, int rangeY, int rangeX, char newTile, bool hasCollision, bool hasInteracted, bool doNotRedraw, bool isPersistent)
 {
@@ -88,20 +95,24 @@ bool Map::GetHasInteracted(int y, int x) const
     return mMap[y][x].HasInteracted();
 }
 
+
 bool Map::GetHasCollided(int y, int x) const
 {
     return mMap[y][x].HasCollision();
 }
+
 
 int Map::GetHeight() const
 {
     return mHeight;
 }
 
+
 int Map::GetWidth() const
 {
     return mWidth;
 }
+
 
 void Map::Toggle(int y, int x, char onTile, char offTile, bool collisionOnState, bool collisionOffState)
 {
@@ -117,6 +128,7 @@ void Map::Toggle(int y, int x, char onTile, char offTile, bool collisionOnState,
     }
 }
 
+
 void Map::ResetTileState(int y, int x)
 {
     if (!mMap[y][x].GetIsPersistent())
@@ -125,10 +137,12 @@ void Map::ResetTileState(int y, int x)
     }
 }
 
+
 bool Map::IsInBounds(int y, int x) const
 {
     return y >= 0 && y < mHeight && x >= 0 && x < mWidth;
 }
+
 
 void Map::SetEntityAt(int y, int x, char entity)
 {
@@ -137,6 +151,7 @@ void Map::SetEntityAt(int y, int x, char entity)
         mMap[y][x].SetEntityTile(entity);
     }
 }
+
 
 void Map::ModifyLayer(const std::function<void(Tile&)>& func)
 {
