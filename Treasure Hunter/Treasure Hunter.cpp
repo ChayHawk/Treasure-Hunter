@@ -9,7 +9,7 @@
 #include "Map.h"
 #include "Character.h"
 
-const int digCount{ 2 };
+const int digCount{ 25 };
 
 /**
  * @brief Builds the first map.
@@ -155,23 +155,10 @@ int main()
 
     while (!isGameOver)
     {
-        //We only want to introduce losing conditions once the game has started.
-        //This ends the game right away, should probably move it somewhere else
-        if (flags.canDig == true)
-        {
-            if (player.GetDigsLeft() == 0)
-            {
-                std::print("You ran out of digs, prospector pete murdered you\n");
-                std::print("Game Over");
-
-                return 0;
-            }
-        }
-
         theGoldenHills.SetEntityAt(player.GetY(), player.GetX(), player.GetSprite());
         theGoldenHills.Draw();
 
-        std::print("{:^39}\n", "TREASURE HUNTER - 0.1.0");
+        std::print("{:^39}\n", "TREASURE HUNTER - 0.2.0");
         UI(player.GetScore(), player.GetY(), player.GetX(), player);
 
         std::print("\nMove (W/A/S/D) or Interact (E): \n\n");
@@ -204,6 +191,15 @@ int main()
         {
             if (flags.canDig == true)
             {
+                if (player.GetDigsLeft() == 0)
+                {
+                    std::print("You ran out of digs, lets tally up your score!\n");
+                    
+                    //DO SCORE TALLY HERE
+
+                    return 0;
+                }
+              
                 player.Dig(theGoldenHills);
             }
             else

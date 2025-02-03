@@ -76,5 +76,4 @@ void Map::Tile::SetDoNotRedraw(bool value)
 
 void Map::Tile::SetIsPersistent(bool value) 
 { 
-    isPersistent = value; 
-}
+    isPersistent = value; }

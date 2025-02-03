@@ -55,42 +55,20 @@ class Map
                     isPersistent(false)
                 {}
 
-                char GetBaseTile() const { return baseTile; }
-                char GetObjectTile() const { return objectTile; }                
-                char GetEntityTile() const { return entityTile; }
-                bool HasCollision() const { return hasCollision; }
-                bool HasInteracted() const { return hasInteracted; }
-                bool GetDoNotRedraw() const { return doNotRedraw; }
-                bool GetIsPersistent() const { return isPersistent; }
-
-                void SetBaseTile(char newBaseTile)
-                {
-                    if (std::isprint(static_cast<unsigned char>(newBaseTile)))
-                    {
-                        baseTile = newBaseTile;
-                    }
-                }
-
-                void SetObjectTile(char newObjectTile) 
-                { 
-                    if(std::isprint(static_cast<unsigned char>(newObjectTile)))
-                    {
-                        baseTile = newObjectTile;
-                    }
-                }
-        
-                void SetEntityTile(char newEntityTile) 
-                { 
-                    if (newEntityTile == NO_ENTITY || std::isprint(static_cast<unsigned char>(newEntityTile)))
-                    {
-                        entityTile = newEntityTile;
-                    }
-                }
-
-                void SetHasCollision(bool value) { hasCollision = value; }
-                void SetHasInteracted(bool value) { hasInteracted = value; }
-                void SetDoNotRedraw(bool value) { doNotRedraw = value; }
-                void SetIsPersistent(bool value) { isPersistent = value; }
+                char GetBaseTile() const;
+                char GetObjectTile() const;
+                char GetEntityTile() const;
+                bool HasCollision() const;
+                bool HasInteracted() const;
+                bool GetDoNotRedraw() const;
+                bool GetIsPersistent() const;
+                void SetBaseTile(char newBaseTile);
+                void SetObjectTile(char newObjectTile);
+                void SetEntityTile(char newEntityTile);
+                void SetHasCollision(bool value);
+                void SetHasInteracted(bool value);
+                void SetDoNotRedraw(bool value);
+                void SetIsPersistent(bool value);
 
             private:
                 char objectTile;

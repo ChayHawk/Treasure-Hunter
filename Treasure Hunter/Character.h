@@ -44,7 +44,7 @@ class Character
 
         void AddToInventory()
         {
-            mInventory.push_back();
+            
         }
 
     private:
