@@ -42,6 +42,11 @@ class Character
         void SubtractFromDigCount();
         void AddToDigCount();
 
+        void AddToInventory()
+        {
+            mInventory.push_back();
+        }
+
     private:
         std::string mName{};
         char mSprite{};
