@@ -99,7 +99,8 @@ void Character::Dig(Map& map)
             return;
     }
 
-    if (mDigsLeft > 0)
+    //Could create a special boolean called hasBeenDug and use that instead
+    if (mDigsLeft > 0 && map.GetHasInteracted(targetY, targetX) == false)
     {
         // Check if the target tile is in bounds.
         if (!map.IsInBounds(targetY, targetX))
@@ -115,9 +116,19 @@ void Character::Dig(Map& map)
             return;
         }
 
-        // Perform the dig (set the target tile to empty and mark it persistent).
-        map.EditTile(targetY, targetX, ' ', false, false, true, true);
-        SubtractFromDigCount();
+        if (map.GetHasTreasure(targetY, targetX) == true)
+        {
+            map.EditTile(targetY, targetX, 'x', false, true, false, false, true);
+            std::print("You Found some treasure!\n");
+            mScore += 100;
+            SubtractFromDigCount();
+        }
+        else
+        {
+            // Perform the dig (set the target tile to empty and mark it persistent).
+            map.EditTile(targetY, targetX, ' ', false, true, false, true);
+            SubtractFromDigCount();
+        }
     }
     else
     {

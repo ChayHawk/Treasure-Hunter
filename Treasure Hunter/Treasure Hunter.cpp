@@ -22,33 +22,35 @@ const int digCount{ 25 };
  */
 void GoldenHills(Map& map)
 {
-    map.EditTileRange(0, 0, 1, 4, ' ', false, false, false, false); //Clears the room of ground
-    map.EditTileRange(0, 6, 1, 4, ' ', false, false, false, false); //Clears the room of ground
+    map.EditTileRange(0, 0, 1, 4, ' ', false, false, false, false, false); //Clears the room of ground
+    map.EditTileRange(0, 6, 1, 4, ' ', false, false, false, false, false); //Clears the room of ground
 
-    map.EditTile(2, 0, '#', true);
-    map.EditTile(2, 1, '#', true, false, false, true);
-    map.EditTile(2, 2, '#', true);
-    map.EditTile(2, 3, '#', true);
+    map.EditTile(2, 0, '#', true, false, false, false, false);
+    map.EditTile(2, 1, '#', true, false, false, false, false);
+    map.EditTile(2, 2, '#', true, false, false, false, false);
+    map.EditTile(2, 3, '#', true, false, false, false, false);
     map.EditTile(2, 4, '_', true, true, false, true); //Door
-    map.EditTile(2, 5, '#', true);
-    map.EditTile(2, 6, '#', true);
-    map.EditTile(2, 7, '#', true);
-    map.EditTile(2, 8, '#', true);
-    map.EditTile(2, 9, '#', true);
-    map.EditTile(2, 10, '#', true);
-    map.EditTile(2, 11, '#', true);
-    map.EditTile(1, 11, '#', true);
-    map.EditTile(0, 11, '#', true);
+    map.EditTile(2, 5, '#', true, false, false, false, false);
+    map.EditTile(2, 6, '#', true, false, false, false, false);
+    map.EditTile(2, 7, '#', true, false, false, false, false);
+    map.EditTile(2, 8, '#', true, false, false, false, false);
+    map.EditTile(2, 9, '#', true, false, false, false, false);
+    map.EditTile(2, 10, '#', true, false, false, false, false);
+    map.EditTile(2, 11, '#', true, false, false, false, false);
+    map.EditTile(1, 11, '#', true, false, false, false, false);
+    map.EditTile(0, 11, '#', true, false, false, false, false);
 
     //Scenery
-    map.EditTile(7, 11, '@', true);
-    map.EditTile(8, 12, '@', true);
-    map.EditTile(8, 10, '@', true);
+    map.EditTile(7, 11, '@', true, false, false, false, false);
+    map.EditTile(8, 12, '@', true, false, false, false, false);
+    map.EditTile(8, 10, '@', true, false, false, false, false);
 
+    //Treasure
+    map.EditTile(8, 11, '.', false, false, false, false, true);
 
-    map.EditTile(1, 5, '#', true);
-    map.EditTile(0, 5, '|', true, true, false, true); //Door
-    map.EditTile(0, 2, '*', true); //NPC
+    map.EditTile(1, 5, '#', true, false, false, false, false);
+    map.EditTile(0, 5, '|', true, true, false, true, false); //Door
+    map.EditTile(0, 2, '*', true, false, false, false, false); //NPC
 }
 
 /**
@@ -144,7 +146,6 @@ int main()
     Map theGoldenHills("The Golden Hills", 20, 20, '.');
     theGoldenHills.Initialize();
     GoldenHills(theGoldenHills);
-
     Character player("Player", 'O', 4, 4);
 
     Flags flags;

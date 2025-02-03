@@ -34,19 +34,24 @@ void Map::Draw()
         {
             if (mMap[column][row].GetDoNotRedraw() == true)
             {
-                mMap[column][row].SetBaseTile(' ');
+                std::print("  ");
+                continue;
+            }
+
+            //Debug
+            if (mMap[column][row].HasTreasure() == true)
+            {
+                //mMap[column][row].SetBaseTile('');
             }
 
             //If entity is present then print it, if not, print base tile
             if (mMap[column][row].GetEntityTile() != NO_ENTITY)
             {
-                std::cout << mMap[column][row].GetEntityTile() << ' ';
-                //std::print(" ", mMap[column][row].GetEntityTile());
+                std::print("{} ", mMap[column][row].GetEntityTile());
             }
             else
             {
-                std::cout << mMap[column][row].GetBaseTile() << ' ';
-                //std::print(" ", mMap[column][row].GetBaseTile());
+                std::print("{} ", mMap[column][row].GetBaseTile());
             }
         }
         std::cout << '\n';
@@ -69,7 +74,7 @@ void Map::Draw()
  * @param doNotRedraw If this tile should redraw itself or not
  * @param isPersistent Marks the tile as persistent which prevents it from being drawn over.
  */
-void Map::EditTile(int y, int x, char newTile, bool hasCollision, bool hasInteracted, bool doNotRedraw, bool isPersistent)
+void Map::EditTile(int y, int x, char newTile, bool hasCollision, bool hasInteracted, bool doNotRedraw, bool isPersistent, bool hasTreasure)
 {
     if (!IsInBounds(y, x))
     {
@@ -77,15 +82,18 @@ void Map::EditTile(int y, int x, char newTile, bool hasCollision, bool hasIntera
         return;
     }
 
+    auto& tile = mMap[y][x];
+
     if (newTile != NO_ENTITY)
     {
-        mMap[y][x].SetObjectTile(newTile);
+        tile.SetObjectTile(newTile);
     }
 
-    mMap[y][x].SetHasCollision(hasCollision);
-    mMap[y][x].SetHasInteracted(hasInteracted);
-    mMap[y][x].SetDoNotRedraw(doNotRedraw);
-    mMap[y][x].SetIsPersistent(isPersistent);
+    tile.SetHasCollision(hasCollision);
+    tile.SetHasInteracted(hasInteracted);
+    tile.SetDoNotRedraw(doNotRedraw);
+    tile.SetIsPersistent(isPersistent);
+    tile.SetHasTreasure(hasTreasure);
 }
 
 
@@ -104,7 +112,7 @@ void Map::EditTile(int y, int x, char newTile, bool hasCollision, bool hasIntera
  * @param doNotRedraw If this tile should redraw itself or not
  * @param isPersistent Marks the tile as persistent which prevents it from being drawn over.
  */
-void Map::EditTileRange(int y, int x, int rangeY, int rangeX, char newTile, bool hasCollision, bool hasInteracted, bool doNotRedraw, bool isPersistent)
+void Map::EditTileRange(int y, int x, int rangeY, int rangeX, char newTile, bool hasCollision, bool hasInteracted, bool doNotRedraw, bool isPersistent, bool hasTreasure)
 {
     // Ensure the entire range is within bounds
     if (!IsInBounds(y, x) || !IsInBounds(y + rangeY, x + rangeX))
@@ -114,9 +122,9 @@ void Map::EditTileRange(int y, int x, int rangeY, int rangeX, char newTile, bool
     }
 
     // Iterate over the intended range
-    for (int column = y; column <= y + rangeY; ++column)
+    for (int column = y; column < std::min(y + rangeY, mHeight); ++column)
     {
-        for (int row = x; row <= x + rangeX; ++row)
+        for (int row = x; row < std::min(x + rangeX, mWidth); ++row)
         {
             if (IsInBounds(column, row))  // Double-check bounds to prevent errors
             {
@@ -129,6 +137,7 @@ void Map::EditTileRange(int y, int x, int rangeY, int rangeX, char newTile, bool
                 mMap[column][row].SetHasInteracted(hasInteracted);
                 mMap[column][row].SetDoNotRedraw(doNotRedraw);
                 mMap[column][row].SetIsPersistent(isPersistent);
+                mMap[column][row].SetTreasureTile(hasTreasure);
             }
         }
     }
@@ -168,6 +177,10 @@ bool Map::GetHasCollision(int y, int x) const
     return mMap[y][x].HasCollision();
 }
 
+bool Map::GetHasTreasure(int y, int x) const
+{
+    return mMap[y][x].HasTreasure();
+}
 
 /**
  * @brief Get map height
@@ -229,23 +242,7 @@ void Map::Toggle(int y, int x, char onTile, char offTile, bool collisionOnState,
 }
 
 
-/**
- * @brief 
- * @version 1.0
- * @author Chay Hawk
- *
- *@warning Function does not appear to be used 
- *
- * @param y The players y coordinates
- * @param x The players x coordinates
- */
-void Map::ResetTileState(int y, int x)
-{
-    if (!mMap[y][x].GetIsPersistent())
-    {
-        mMap[y][x].SetBaseTile(mMap[y][x].GetBaseTile());
-    }
-}
+
 
 
 /**
@@ -310,17 +307,6 @@ void Map::ModifyLayer(const std::function<void(Tile&)>& func)
 //                              TILE SUBCLASS IMPLEMENTATION
 // ============================================================================
 
-void Map::Tile::SetBaseTile(char tile)
-{
-    baseTile = tile;
-}
-
-char Map::Tile::GetBaseTile() const
-{
-    return baseTile;
-}
-
-
 char Map::Tile::GetBaseTile() const 
 { 
     return baseTile; 
@@ -334,6 +320,11 @@ char Map::Tile::GetObjectTile() const
 char Map::Tile::GetEntityTile() const 
 { 
     return entityTile; 
+}
+
+char Map::Tile::GetTreasureTile() const 
+{
+    return treasureTile;
 }
 
 bool Map::Tile::HasCollision() const 
@@ -380,6 +371,15 @@ void Map::Tile::SetEntityTile(char newEntityTile)
     }
 }
 
+void Map::Tile::SetTreasureTile(char newTreasureTile)
+{
+    if (newTreasureTile == NO_ENTITY || std::isprint(static_cast<unsigned char>(newTreasureTile)))
+    {
+        treasureTile = newTreasureTile;
+    }
+}
+
+
 void Map::Tile::SetHasCollision(bool value) 
 { 
     hasCollision = value; 
@@ -388,6 +388,16 @@ void Map::Tile::SetHasCollision(bool value)
 void Map::Tile::SetHasInteracted(bool value) 
 { 
     hasInteracted = value; 
+}
+
+bool Map::Tile::HasTreasure() const
+{
+    return hasTreasure;
+}
+
+void Map::Tile::SetHasTreasure(bool value)
+{
+    hasTreasure = value;
 }
 
 void Map::Tile::SetDoNotRedraw(bool value) 
