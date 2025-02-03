@@ -4,11 +4,12 @@
 #include <algorithm>
 #include <cctype>
 #include <print>
+#include <limits>
 
 #include "Map.h"
 #include "Character.h"
 
-
+const int digCount{ 2 };
 
 /**
  * @brief Builds the first map.
@@ -19,7 +20,7 @@
  *
  * @param map
  */
-void TestMap(Map& map)
+void GoldenHills(Map& map)
 {
     map.EditTileRange(0, 0, 1, 4, ' ', false, false, false, false); //Clears the room of ground
     map.EditTileRange(0, 6, 1, 4, ' ', false, false, false, false); //Clears the room of ground
@@ -64,6 +65,12 @@ const enum class DialogueID
     NPC_01_Dialogue_02
 };
 
+struct Flags
+{
+    bool talkedToProspector{ false };
+    bool canDig{ false };
+};
+
 /**
  * @brief Show dialogue
  * @version 1.0
@@ -73,14 +80,41 @@ const enum class DialogueID
  *
  * @param ID
  */
-void Dialogue(const DialogueID& ID)
+void Dialogue(const DialogueID& ID, Flags& flags, Character& character)
 {
     switch (ID)
     {
         case DialogueID::NPC_01_Dialogue_01:
         {
-            std::print("Hey there fella, my names prospector pete!\n");
-            std::print("Would you like to go on a treasure hunting adventure?!\n");
+            std::print("Hey there fella, my names prospector Pete!\n");
+            std::print("Would you like to go on a treasure hunting adventure fella?!\n");
+            
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+            std::print("1. Sure, I'd love to!\n");
+            std::print("2. Sorry Pete\n");
+            int input{};
+
+            std::cin >> input;
+
+            if (input == 1)
+            {
+                std::print("Thats the spirit! So heres how the game works, you got {} attempts to dig up some\n", digCount);
+                std::print("good loot, but not all the areas out there have treasure, you'll just have to use your wits!\n");
+                std::print("Heres a  shovel pal, good luck out there!\n");
+                flags.canDig = true;
+                character.SetDigCount(digCount);
+
+            }
+            else if (input == 2)
+            {
+                std::print("Well thats a darn shame fella, it's almost like it was pointless to talk to me.\n");
+            }
+            else
+            {
+                std::print("I cant understand you fella!\n");
+            }
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
         break;
     }
@@ -91,29 +125,29 @@ void Intro()
 {
     std::print("{:^39}\n", "TREASURE HUNTER");
     std::print("{:^39}\n", "By");
-    std::print("{:^39}\n", "Chay Hawk");
+    std::print("{:^39}\n", "Chay Hawk\n");
 }
 
 
-void UI(int score, int money, int y, int x, const Character& character)
+void UI(int score, int y, int x, const Character& character)
 {
-    std::print("{:=>39}\n", "");
-    std::print(" Score: [ {:^8} ]        Y: [ {:^4} ]\n", score, y);
-    std::print(" Money: [ {:^8} ]        X: [ {:^4} ]\n", money, x);
-    std::print(" Direction: [ {:^4} ]\n", character.GetDirection());
-    std::print(" Digs Left: [ {:^4}]\n", character.GetDigsLeft());
-    std::print("{:<4}\n", "");
-    std::print("{:=>39}\n", "");
+    std::print("{:=>39}\n", "");  // Top border
+    std::print(" Score:      [ {:^8} ]   Y: [ {:^4} ]\n", score, y);
+    std::print(" Direction:  [ {:^8} ]   X: [ {:^4} ]\n", character.GetDirection(), x);
+    std::print(" Digs Left:  [ {:^8} ]\n", character.GetDigsLeft());
+    std::print("{:=>39}\n", "");  // Bottom border
 }
 
 
 int main()
 {
-    Map theGoldenHills("Test Map", 20, 20, '.');
+    Map theGoldenHills("The Golden Hills", 20, 20, '.');
     theGoldenHills.Initialize();
-    TestMap(theGoldenHills);
+    GoldenHills(theGoldenHills);
 
     Character player("Player", 'O', 4, 4);
+
+    Flags flags;
 
     Intro();
 
@@ -121,12 +155,24 @@ int main()
 
     while (!isGameOver)
     {
+        //We only want to introduce losing conditions once the game has started.
+        //This ends the game right away, should probably move it somewhere else
+        if (flags.canDig == true)
+        {
+            if (player.GetDigsLeft() == 0)
+            {
+                std::print("You ran out of digs, prospector pete murdered you\n");
+                std::print("Game Over");
+
+                return 0;
+            }
+        }
+
         theGoldenHills.SetEntityAt(player.GetY(), player.GetX(), player.GetSprite());
         theGoldenHills.Draw();
 
-        int money{ 100 }; //Temporary
         std::print("{:^39}\n", "TREASURE HUNTER - 0.1.0");
-        UI(player.GetScore(), money, player.GetY(), player.GetX(), player);
+        UI(player.GetScore(), player.GetY(), player.GetX(), player);
 
         std::print("\nMove (W/A/S/D) or Interact (E): \n\n");
 
@@ -151,12 +197,19 @@ int main()
             }
             else if (player.GetY() == 1 && player.GetX() == 2)
             {
-                Dialogue(DialogueID::NPC_01_Dialogue_01);
+                Dialogue(DialogueID::NPC_01_Dialogue_01, flags, player);
             }
         }
         else if (input == 'f')
         {
-            player.Dig(theGoldenHills);
+            if (flags.canDig == true)
+            {
+                player.Dig(theGoldenHills);
+            }
+            else
+            {
+                std::print("I don't have a shovel!\n");
+            }
         }
         //Example
         else if (input == 'r')

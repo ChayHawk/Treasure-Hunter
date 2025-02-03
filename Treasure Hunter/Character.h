@@ -18,6 +18,9 @@
  * @todo Implement an interaction system where you can interact with objects
  * and entities within a certain radius
  * @todo Implement Inventory system for treasure
+ * @todo Implement a metal detector or an item finder that tells the player
+ * The general location of treasure, maybe within a 9 square block. Upgrades could make
+ * the radius smaller.
  */
 class Character
 {
@@ -35,6 +38,9 @@ class Character
         int GetScore() const;
         std::string GetDirection() const;
         void Dig(Map& map);
+        void SetDigCount(int amount);
+        void SubtractFromDigCount();
+        void AddToDigCount();
 
     private:
         std::string mName{};

@@ -113,6 +113,7 @@ void Character::Dig(Map& map)
 
         // Perform the dig (set the target tile to empty and mark it persistent).
         map.EditTile(targetY, targetX, ' ', false, false, true, true);
+        SubtractFromDigCount();
     }
     else
     {
@@ -170,4 +171,26 @@ void Character::SetDirection(char direction)
             // Optionally, you might set a default value or leave mDirection unchanged.
             break;
     }
+}
+
+
+void Character::SetDigCount(int amount)
+{
+    if (amount > 0)
+    {
+        mDigsLeft = amount;
+    }
+}
+
+void Character::SubtractFromDigCount()
+{
+    if (mDigsLeft > 0)
+    {
+        --mDigsLeft;
+    }
+}
+
+void Character::AddToDigCount()
+{
+    ++mDigsLeft;
 }
