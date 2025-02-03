@@ -1,9 +1,6 @@
 #include "Map.h"
 
 
-
-
-
 void Map::Initialize()
 {
     mMap.assign(mHeight, std::vector<Tile>(mWidth, Tile(mTile)));

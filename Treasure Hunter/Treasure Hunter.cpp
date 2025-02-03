@@ -103,7 +103,7 @@ int main()
         myMap.Draw();
 
         int money{ 100 }; //Temporary
-        std::print("{:^39}\n", "TREASURE HUNTER");
+        std::print("{:^39}\n", "TREASURE HUNTER - 0.1.0");
         UI(player.GetScore(), money, player.GetY(), player.GetX(), player);
 
         std::print("\nMove (W/A/S/D) or Interact (E): \n\n");
