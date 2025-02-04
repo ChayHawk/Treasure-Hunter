@@ -194,9 +194,8 @@ int main()
             {
                 if (player.GetDigsLeft() == 0)
                 {
-                    std::print("You ran out of digs, lets tally up your score!\n");
-                    
-                    //DO SCORE TALLY HERE
+                    std::print("You ran out of digs, you earned {} score!\n", player.GetScore());
+                    std::print("Game Over\n");
 
                     return 0;
                 }

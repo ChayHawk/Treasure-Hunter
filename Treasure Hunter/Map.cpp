@@ -78,7 +78,7 @@ void Map::EditTile(int y, int x, char newTile, bool hasCollision, bool hasIntera
 {
     if (!IsInBounds(y, x))
     {
-        std::print("Coordinates are out of bounds!\n");
+        std::print("Coordinates ({}, {}) are out of bounds!\n", y, x);
         return;
     }
 
@@ -112,36 +112,36 @@ void Map::EditTile(int y, int x, char newTile, bool hasCollision, bool hasIntera
  * @param doNotRedraw If this tile should redraw itself or not
  * @param isPersistent Marks the tile as persistent which prevents it from being drawn over.
  */
-void Map::EditTileRange(int y, int x, int rangeY, int rangeX, char newTile, bool hasCollision, bool hasInteracted, bool doNotRedraw, bool isPersistent, bool hasTreasure)
+void Map::EditTileRange(int y, int x, int rangeY, int rangeX, char newTile, bool hasCollision,
+    bool hasInteracted, bool doNotRedraw, bool isPersistent, bool hasTreasure)
 {
-    // Ensure the entire range is within bounds
     if (!IsInBounds(y, x) || !IsInBounds(y + rangeY, x + rangeX))
     {
         std::print("Coordinates are out of bounds!\n");
         return;
     }
 
-    // Iterate over the intended range
-    for (int column = y; column < std::min(y + rangeY, mHeight); ++column)
-    {
-        for (int row = x; row < std::min(x + rangeX, mWidth); ++row)
-        {
-            if (IsInBounds(column, row))  // Double-check bounds to prevent errors
-            {
-                if (newTile != NO_ENTITY)
-                {
-                    mMap[column][row].SetObjectTile(newTile);
-                }
+    int endY = std::min(y + rangeY, mHeight);
+    int endX = std::min(x + rangeX, mWidth);
 
-                mMap[column][row].SetHasCollision(hasCollision);
-                mMap[column][row].SetHasInteracted(hasInteracted);
-                mMap[column][row].SetDoNotRedraw(doNotRedraw);
-                mMap[column][row].SetIsPersistent(isPersistent);
-                mMap[column][row].SetTreasureTile(hasTreasure);
+    for (int column = y; column < endY; ++column)
+    {
+        for (int row = x; row < endX; ++row)
+        {
+            // No need to check IsInBounds here because we clamped end indices.
+            if (newTile != NO_ENTITY)
+            {
+                mMap[column][row].SetObjectTile(newTile);
             }
+            mMap[column][row].SetHasCollision(hasCollision);
+            mMap[column][row].SetHasInteracted(hasInteracted);
+            mMap[column][row].SetDoNotRedraw(doNotRedraw);
+            mMap[column][row].SetIsPersistent(isPersistent);
+            mMap[column][row].SetTreasureTile(hasTreasure);
         }
     }
 }
+
 
 
 /**
