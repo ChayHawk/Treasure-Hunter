@@ -9,6 +9,14 @@
 
 static constexpr char NO_ENTITY = '\0';
 
+/**
+ * @class Map
+ * @brief Map Class
+ * @version 1.0
+ * @author Chay Hawk
+ *
+ * This represents a map in the game
+ */
 class Map
 {
     public:
@@ -18,70 +26,71 @@ class Map
 
         void Initialize();
         void Draw();
-        void EditTile(int y, int x, char newTile = NO_ENTITY, bool hasCollision = false, bool hasInteracted = false, bool doNotRedraw = false, bool isPersistent = false);
-        void EditTileRange(int y, int x, int rangeY, int rangeX, char newTile = NO_ENTITY, bool hasCollision = false, bool hasInteracted = false, bool doNotRedraw = false, bool isPersistent = false);
+        void EditTile(int y, int x, char newTile = NO_ENTITY, bool hasCollision = false, bool hasInteracted = false, bool doNotRedraw = false, bool isPersistent = false, bool hasTreasure = false);
+        void EditTileRange(int y, int x, int rangeY, int rangeX, char newTile = NO_ENTITY, bool hasCollision = false, bool hasInteracted = false, bool doNotRedraw = false, bool isPersistent = false, bool hasTreasure = false);
         bool GetHasInteracted(int y, int x) const;
-        bool GetHasCollided(int y, int x) const;
+        bool GetHasCollision(int y, int x) const;
+        bool GetHasTreasure(int y, int x) const;
         int GetHeight() const;
         int GetWidth() const;
         void Toggle(int y, int x, char onTile, char offTile, bool collisionOnState, bool collisionOffState);
-        void ResetTileState(int y, int x);
         void SetEntityAt(int y, int x, char entity);
+        bool IsInBounds(int y, int x) const;
 
+         /**
+         * @class Tile
+         * @brief Nested Tile Class
+         * @version 1.0
+         * @author Chay Hawk
+         *
+         * This represents a tile inside of the map
+         */
         class Tile 
         {
             public:
                 Tile(char base)
                     : baseTile(base), objectTile(NO_ENTITY), entityTile(NO_ENTITY),
-                    hasCollision(false), hasInteracted(false), doNotRedraw(false), 
-                    isPersistent(false)
+                    treasureTile(NO_ENTITY), hasCollision(false), hasInteracted(false),
+                    doNotRedraw(false), isPersistent(false), hasTreasure(false)
                 {}
 
-                char GetBaseTile() const { return baseTile; }
-                char GetObjectTile() const { return objectTile; }                
-                char GetEntityTile() const { return entityTile; }
-                bool HasCollision() const { return hasCollision; }
-                bool HasInteracted() const { return hasInteracted; }
-                bool GetDoNotRedraw() const { return doNotRedraw; }
-                bool GetIsPersistent() const { return isPersistent; }
+                char GetBaseTile() const;
+                void SetBaseTile(char newBaseTile);
 
-                void SetBaseTile(char newBaseTile)
-                {
-                    if (std::isprint(static_cast<unsigned char>(newBaseTile)))
-                    {
-                        baseTile = newBaseTile;
-                    }
-                }
+                char GetObjectTile() const;
+                void SetObjectTile(char newObjectTile);
 
-                void SetObjectTile(char newObjectTile) 
-                { 
-                    if(std::isprint(static_cast<unsigned char>(newObjectTile)))
-                    {
-                        baseTile = newObjectTile;
-                    }
-                }
-        
-                void SetEntityTile(char newEntityTile) 
-                { 
-                    if (newEntityTile == NO_ENTITY || std::isprint(static_cast<unsigned char>(newEntityTile)))
-                    {
-                        entityTile = newEntityTile;
-                    }
-                }
+                char GetEntityTile() const;
+                void SetEntityTile(char newEntityTile);
 
-                void SetHasCollision(bool value) { hasCollision = value; }
-                void SetHasInteracted(bool value) { hasInteracted = value; }
-                void SetDoNotRedraw(bool value) { doNotRedraw = value; }
-                void SetIsPersistent(bool value) { isPersistent = value; }
+                bool HasCollision() const;
+                void SetHasCollision(bool value);
+
+                bool HasInteracted() const;
+                void SetHasInteracted(bool value);
+
+                bool HasTreasure() const;
+                void SetHasTreasure(bool value);
+
+                bool GetDoNotRedraw() const;
+                void SetDoNotRedraw(bool value);
+
+                bool GetIsPersistent() const;
+                void SetIsPersistent(bool value);
+
+                char GetTreasureTile() const;
+                void SetTreasureTile(char newTreasureTile);
 
             private:
                 char objectTile;
                 char baseTile;
                 char entityTile;
+                char treasureTile;
                 bool hasCollision;
                 bool hasInteracted;
                 bool doNotRedraw;
                 bool isPersistent;
+                bool hasTreasure;
         };
 
         void ModifyLayer(const std::function<void(Tile&)>& func);
@@ -92,6 +101,4 @@ class Map
         int mWidth{};
         char mTile{};
         std::vector<std::vector<Tile>> mMap;
-
-        bool IsInBounds(int y, int x) const;
 };

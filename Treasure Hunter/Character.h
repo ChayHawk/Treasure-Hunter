@@ -6,6 +6,16 @@
 
 #include "Map.h"
 
+
+/**
+ * @class Character
+ * @brief Character Class
+ * @version 1.0
+ * @author Chay Hawk
+ *
+ * This represents a character in the game.
+ * 
+ */
 class Character
 {
     public:
@@ -21,9 +31,15 @@ class Character
         int GetDigsLeft() const;
         int GetScore() const;
         std::string GetDirection() const;
+        void Dig(Map& map);
+        void SetDigCount(int amount);
+        void SubtractFromDigCount();
+        void AddToDigCount();
 
-        //Need to find a way to stop player from digging into collidable objects.
-        void Dig(int y, int x, Map& map);
+        void AddToInventory()
+        {
+            
+        }
 
     private:
         std::string mName{};
